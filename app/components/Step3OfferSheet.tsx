@@ -4,7 +4,15 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { calculateMinMaxNPV } from '../utils/npvCalculations';
 import { AMOUNT_ADJUSTMENTS } from '../utils/npvConfig';
-import UnlockModal from './UnlockModal';
+import { auth, db, RecaptchaVerifier } from '../utils/firebase';
+import { signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+declare global {
+  interface Window {
+    recaptchaVerifier?: RecaptchaVerifier | null;
+  }
+}
 
 interface Props {
   calculationResult: any;
@@ -14,23 +22,51 @@ interface Props {
 
 export default function Step3OfferSheet({ calculationResult, formData, onBack }: Props) {
   const router = useRouter();
-  const [showModal, setShowModal] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [phoneDigits, setPhoneDigits] = useState('');
+  const [otp, setOtp] = useState('');
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [loading, setLoading] = useState(false);
+  const [firebaseError, setFirebaseError] = useState<string | null>(null);
   const bannerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const overlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Always render the offer results immediately
+
+  // Show overlay after 12 seconds (if not unlocked)
   useEffect(() => {
     if (!unlocked) {
-      const timer = setTimeout(() => {
-        setShowModal(true);
-      }, 12000); // 12 seconds
-      return () => clearTimeout(timer);
+      overlayTimeoutRef.current = setTimeout(() => {
+        setShowOverlay(true);
+      }, 12000);
+      return () => {
+        if (overlayTimeoutRef.current) clearTimeout(overlayTimeoutRef.current);
+      };
     }
   }, [unlocked]);
 
+  // Clean up banner timeout on unmount
   useEffect(() => {
-    console.log('[Step3OfferSheet] showModal:', showModal, 'unlocked:', unlocked);
-  }, [showModal, unlocked]);
+    return () => {
+      if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
+      if (overlayTimeoutRef.current) clearTimeout(overlayTimeoutRef.current);
+    };
+  }, []);
+
+  // On unlock, hide overlay and show banner
+  useEffect(() => {
+    if (unlocked) {
+      setShowOverlay(false);
+      setShowBanner(true);
+      if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
+      bannerTimeoutRef.current = setTimeout(() => {
+        setShowBanner(false);
+      }, 2500);
+    }
+  }, [unlocked]);
 
   // Remove ?result=... from the URL after showing the result (for lump sum flow)
   useEffect(() => {
@@ -41,22 +77,78 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
     }
   }, []);
 
-  // Clean up banner timeout on unmount
   useEffect(() => {
-    return () => {
-      if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
-    };
-  }, []);
+    console.log('[Step3OfferSheet] showOverlay:', showOverlay, 'unlocked:', unlocked);
+  }, [showOverlay, unlocked]);
 
-  const handleUnlockSuccess = () => {
-    console.log('[Step3OfferSheet] handleUnlockSuccess called');
-    setUnlocked(true);
-    setShowModal(false);
-    setShowBanner(true);
-    if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
-    bannerTimeoutRef.current = setTimeout(() => {
-      setShowBanner(false);
-    }, 2500); // 2.5 seconds
+  // Phone/OTP logic
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.startsWith('1') && value.length === 11) {
+      value = value.slice(1);
+    }
+    value = value.slice(0, 10);
+    setPhoneDigits(value);
+  };
+
+  const handleSendCode = async () => {
+    setLoading(true);
+    setFirebaseError(null);
+    let fullPhone = phoneDigits;
+    if (phoneDigits.length === 10) {
+      fullPhone = `+1${phoneDigits}`;
+    } else if (phoneDigits.length === 11 && phoneDigits.startsWith('1')) {
+      fullPhone = `+${phoneDigits}`;
+    } else {
+      setFirebaseError('📱 Please enter a valid 10-digit phone number');
+      setLoading(false);
+      return;
+    }
+    let appVerifier: RecaptchaVerifier | undefined = undefined;
+    if (!(window.location.hostname === 'localhost' && (auth as any).settings?.appVerificationDisabledForTesting)) {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+        await window.recaptchaVerifier.render();
+      }
+      appVerifier = window.recaptchaVerifier as RecaptchaVerifier;
+    }
+    if (!appVerifier) {
+      setFirebaseError('Verification system not ready. Please try again.');
+      setLoading(false);
+      return;
+    }
+    try {
+      const result = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+      setConfirmationResult(result);
+      setStep('otp');
+    } catch (err: any) {
+      setFirebaseError('Failed to send verification code.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    setLoading(true);
+    setFirebaseError(null);
+    if (otp.length !== 6) {
+      setFirebaseError('⚠️ Enter the 6-digit code sent to your phone');
+      setLoading(false);
+      return;
+    }
+    try {
+      if (!confirmationResult) throw new Error('No confirmation result available');
+      await confirmationResult.confirm(otp);
+      await addDoc(collection(db, 'verifiedPhones'), {
+        phone: `+1${phoneDigits}`,
+        timestamp: serverTimestamp()
+      });
+      setUnlocked(true);
+    } catch (error: any) {
+      setFirebaseError('Invalid verification code. Try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const { minOffer, maxOffer, familyProtectionNPV, npv } = calculationResult || {};
@@ -105,7 +197,7 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
   }
 
   return (
-    <div className="step calculator text-center px-3 py-4">
+    <div className="step calculator text-center px-3 py-4" style={{ position: 'relative' }}>
       {showBanner && (
         <div style={{
           background: '#e6f9ed',
@@ -121,8 +213,149 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
           alignItems: 'center',
           justifyContent: 'center',
           gap: 8,
+          zIndex: 1200,
+          position: 'relative',
         }}>
           <span role="img" aria-label="party">🎉</span> Offer Unlocked!
+        </div>
+      )}
+      {/* Overlay for unlock */}
+      {showOverlay && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(34,180,85,0.18)',
+          backdropFilter: 'blur(2.5px)',
+          WebkitBackdropFilter: 'blur(2.5px)',
+          zIndex: 1100,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'opacity 0.5s',
+          opacity: showOverlay ? 1 : 0,
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+            maxWidth: '320px',
+            width: '100%',
+            padding: '2rem 1.5rem',
+            margin: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            gap: '1.25rem',
+          }}>
+            <div id="recaptcha-container"></div>
+            {step === 'phone' && (
+              <>
+                <h2 style={{ marginBottom: '0.5rem', color: '#22b455' }}>Unlock Your Offer</h2>
+                <p style={{ marginBottom: '1rem', color: '#555' }}>Enter your phone number to unlock your personalized offer.</p>
+                <input
+                  type="tel"
+                  placeholder="e.g. 561-568-3128"
+                  value={phoneDigits}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  maxLength={12}
+                  pattern="[0-9-]*"
+                  inputMode="numeric"
+                  style={{
+                    fontFamily: 'monospace',
+                    letterSpacing: '0.5px',
+                    width: '100%',
+                    textAlign: 'center',
+                    padding: '0.75rem',
+                    borderRadius: '6px',
+                    border: '1.5px solid #ccc',
+                    fontSize: '1.1rem',
+                    marginBottom: '0.5rem',
+                  }}
+                  onKeyPress={(e) => {
+                    if (!/[\d]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pastedText = e.clipboardData.getData('text');
+                    const cleaned = pastedText.replace(/\D/g, '').slice(0, 10);
+                    setPhoneDigits(cleaned);
+                  }}
+                />
+                {firebaseError && <div style={{ color: '#dc3545', fontSize: '0.95rem', marginBottom: '0.75rem' }}>{firebaseError}</div>}
+                <button
+                  onClick={handleSendCode}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    margin: '1rem 0 0 0',
+                    padding: '0.75rem',
+                    fontSize: '1.1rem',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    background: '#22b455',
+                    color: 'white',
+                    border: 'none',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 2px 8px rgba(34,180,85,0.08)'
+                  }}
+                >
+                  {loading ? 'Sending...' : 'Send Code'}
+                </button>
+              </>
+            )}
+            {step === 'otp' && (
+              <>
+                <h2 style={{ color: '#22b455' }}>Enter Verification Code</h2>
+                <p style={{ color: '#555' }}>We sent a 6-digit code to your phone.</p>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  value={otp}
+                  onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    textAlign: 'center',
+                    fontSize: '1.25rem',
+                    fontWeight: 600,
+                    border: '2px solid #dee2e6',
+                    borderRadius: '8px',
+                    backgroundColor: loading ? '#f8f9fa' : 'white',
+                    transition: 'all 0.2s ease',
+                    marginBottom: '1rem',
+                  }}
+                  onFocus={e => e.target.select()}
+                />
+                {firebaseError && <div style={{ color: '#dc3545', fontSize: '0.95rem', marginBottom: '0.75rem' }}>{firebaseError}</div>}
+                <button
+                  onClick={handleVerifyCode}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    margin: '1rem 0 0 0',
+                    padding: '0.75rem',
+                    fontSize: '1.1rem',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    background: '#22b455',
+                    color: 'white',
+                    border: 'none',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 2px 8px rgba(34,180,85,0.08)'
+                  }}
+                >
+                  {loading ? 'Verifying...' : 'Verify'}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
       <div className="bg-white rounded shadow-sm p-4 mx-auto" style={{ maxWidth: '500px', background: 'linear-gradient(90deg, #f8fafc 60%, #fbc23311 100%)', boxShadow: '0 4px 24px rgba(9,180,77,0.08)' }}>
@@ -180,9 +413,6 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
           100% { transform: scale(1); opacity: 1; }
         }
       `}</style>
-      {!unlocked && showModal && (
-        <UnlockModal key={showModal ? 'open' : 'closed'} onClose={handleUnlockSuccess} />
-      )}
     </div>
   );
 }
