@@ -28,6 +28,10 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
     }
   }, [unlocked]);
 
+  useEffect(() => {
+    console.log('[Step3OfferSheet] showModal:', showModal, 'unlocked:', unlocked);
+  }, [showModal, unlocked]);
+
   // Remove ?result=... from the URL after showing the result (for lump sum flow)
   useEffect(() => {
     if (typeof window !== 'undefined' && window.history && window.location.search.includes('result=')) {
@@ -45,6 +49,7 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
   }, []);
 
   const handleUnlockSuccess = () => {
+    console.log('[Step3OfferSheet] handleUnlockSuccess called');
     setUnlocked(true);
     setShowModal(false);
     setShowBanner(true);

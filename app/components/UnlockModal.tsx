@@ -203,6 +203,7 @@ const UnlockModal: React.FC<UnlockModalProps> = ({ onClose }) => {
         window.recaptchaVerifier.clear();
         window.recaptchaVerifier = null;
       }
+      console.log('[UnlockModal] Unmounted');
     };
   }, []);
 
@@ -276,6 +277,7 @@ const UnlockModal: React.FC<UnlockModalProps> = ({ onClose }) => {
         timestamp: serverTimestamp()
       });
 
+      console.log('[UnlockModal] OTP verified, calling onClose');
       onClose?.();
     } catch (error: any) {
       console.error('❌ Invalid code:', error);
