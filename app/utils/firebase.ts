@@ -23,3 +23,4 @@ const db = getFirestore(app);
 console.log('🔥 Firebase initialized');
 
 export { auth, db, RecaptchaVerifier }; 
+// Triggering redeploy
