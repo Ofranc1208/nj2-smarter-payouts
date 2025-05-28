@@ -152,11 +152,11 @@ export default function Contact() {
                 <h4 className="fw-bold mb-3">SmarterPayouts</h4>
                 <p className="mb-2 d-flex align-items-center">
                   <span className="me-2" aria-label="Email" role="img">📧</span>
-                  <strong>Email:</strong> support@smarterpayouts.com
+                  <strong>Email:</strong> info@smarterpayouts.com
                 </p>
                 <p className="mb-2 d-flex align-items-center">
                   <span className="me-2" aria-label="Phone" role="img">📞</span>
-                  <strong>Phone:</strong> +1 (561) 583-1280
+                  <strong>Phone:</strong> (954) 764-9750
                 </p>
                 <p className="mb-2 d-flex align-items-center">
                   <span className="me-2" aria-label="Hours" role="img">⏰</span>
@@ -167,18 +167,18 @@ export default function Contact() {
                   <span>
                     <strong>Address:</strong>
                     <br />
-                    123 Main Street, Suite 500
+                    433 Plaza Real, Suite 275
                     <br />
-                    Delray Beach, FL 33444
+                    Boca Raton, FL 33432
                   </span>
                 </p>
                 <iframe
                   className="w-100 rounded shadow-sm"
                   height="200"
                   loading="lazy"
-                  src="https://www.google.com/maps?q=Delray+Beach,+FL+33444&output=embed"
+                  src="https://www.google.com/maps?q=433+Plaza+Real,+Boca+Raton,+FL+33432&output=embed"
                   title="SmarterPayouts Location"
-                  aria-label="Map showing SmarterPayouts location in Delray Beach, FL"
+                  aria-label="Map showing SmarterPayouts location in Boca Raton, FL"
                 ></iframe>
               </div>
             </div>

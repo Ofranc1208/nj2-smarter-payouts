@@ -83,7 +83,7 @@ export default function GetAQuote() {
             {/* Option 2: Talk to Us */}
             <div className="col-md-6">
               <a
-                href="tel:+18005551234"
+                href="tel:+19547649750"
                 className="text-decoration-none text-dark"
                 aria-label="Call to get a quote from a representative"
               >
@@ -111,6 +111,7 @@ export default function GetAQuote() {
                     <span className="badge bg-success bg-opacity-10 text-success fw-semibold">
                       No Personal Info Needed
                     </span>
+                    <div className="mt-2 text-muted small">(954) 764-9750</div>
                   </div>
                 </div>
               </a>

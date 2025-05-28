@@ -115,10 +115,12 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
         <div className="offer-footer mt-5 small text-muted" style={{ marginTop: 32 }}>
           <strong>SmarterPayouts LLC</strong>
           <br />
-          123 Main Street, Suite 200, Dallas TX 75201
+          433 Plaza Real, Suite 275
           <br />
-          <a href="tel:+18885551234" className="text-reset text-decoration-none">
-            1-888-555-1234
+          Boca Raton, FL 33432
+          <br />
+          <a href="tel:+19547649750" className="text-reset text-decoration-none">
+            (954) 764-9750
           </a>{' '}
           •{' '}
           <a href="mailto:info@smarterpayouts.com" className="text-reset text-decoration-none">

@@ -90,7 +90,7 @@ export default function FABSpeedDial() {
       >
         {/* Call Option */}
         <a 
-          href="tel:+1-800-555-1234" 
+          href="tel:+19547649750" 
           className="fab-item fab-call" 
           aria-label="Call Us"
           style={{
@@ -116,7 +116,7 @@ export default function FABSpeedDial() {
           }}
         >
           <span style={{ fontSize: '20px' }}>📞</span>
-          <span style={{ fontSize: '14px', fontWeight: 500 }}>Let's Talk</span>
+          <span style={{ fontSize: '14px', fontWeight: 500 }}>(954) 764-9750</span>
         </a>
 
         {/* Email Option */}
