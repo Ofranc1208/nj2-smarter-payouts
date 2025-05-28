@@ -9,7 +9,7 @@ const videos = [
     url: 'https://youtu.be/TxFogK2R61o',
   },
   {
-    img: '/assets/images/why-wait.jpg',
+    img: '/assets/images/why-wait.JPG',
     alt: 'Why wait, see an Early Lump offer in 2 minutes thumbnail',
     title: 'Why wait, see an Early Lump offer in 2 minutes',
     desc: 'Understand the benefit of receiving a lump-sum today versus waiting for monthly checks. A 2-minute video that explains everything.',
