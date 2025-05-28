@@ -18,7 +18,6 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const isInProcessSection = processRoutes.includes(pathname);
 
-  // Close dropdown when navigating
   React.useEffect(() => {
     setDropdownOpen(false);
     setNavbarCollapsed(true);
@@ -76,16 +75,16 @@ export default function Navbar() {
               <Link className={`nav-link${pathname === '/articles' ? ' active' : ''}`} href="/articles">Articles</Link>
             </li>
             <li className="nav-item">
-              <Link className={`nav-link${pathname === '/testimonials' ? ' active' : ''}`} href="/testimonials">Testimonials</Link>
+              <Link className={`nav-link${pathname === '/testimonials' ? ' active' : ''}`} href="/testimonials">⭐ Testimonials</Link>
             </li>
             <li className="nav-item">
-              <Link className={`nav-link${pathname === '/credentials' ? ' active' : ''}`} href="/credentials">Credentials</Link>
+              <Link className={`nav-link${pathname === '/credentials' ? ' active' : ''}`} href="/credentials">🛡️ Credentials</Link>
             </li>
             <li className="nav-item">
-              <Link className={`nav-link${pathname === '/resources' ? ' active' : ''}`} href="/resources">Resources</Link>
+              <Link className={`nav-link${pathname === '/resources' ? ' active' : ''}`} href="/resources">📚 Resources</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube Channel</a>
+              <a className="nav-link" href="https://youtube.com" target="_blank" rel="noopener noreferrer">▶️ YouTube Channel</a>
             </li>
             <li className="nav-item">
               <Link className={`nav-link${pathname === '/about' ? ' active' : ''}`} href="/about">About Us</Link>
@@ -107,4 +106,4 @@ export default function Navbar() {
       </div>
     </nav>
   );
-} 
+}
