@@ -28,7 +28,7 @@ export default function YouTubeChannel() {
   return (
     <>
       <Head>
-        <title>SmarterPayouts YouTube Channel</title>
+        <title>Smarter Payouts YouTube Channel</title>
         <meta name="description" content="Explore our latest videos and insights on structured settlements and payout strategies." />
       </Head>
       <section className="how-fast-hero p-4 rounded mb-4 d-flex align-items-center justify-content-center" style={{
