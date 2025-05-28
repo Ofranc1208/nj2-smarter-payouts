@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { calculateGuaranteedNPV } from '../utils/npvCalculations';
 import { isValidDate } from '../utils/validationHelpers';
@@ -24,6 +24,8 @@ export default function Step1PaymentDetails({
   const [showTooltip, setShowTooltip] = useState(false);
   const [isAdditionalDetailsCollapsed, setIsAdditionalDetailsCollapsed] = useState(true);
   const router = useRouter();
+  const additionalDetailsRef = useRef<HTMLDivElement>(null);
+  const [additionalDetailsError, setAdditionalDetailsError] = useState('');
 
   const {
     amount,
@@ -74,7 +76,25 @@ export default function Step1PaymentDetails({
   };
 
   const handleContinue = () => {
-    if (!handleValidate()) return;
+    setAdditionalDetailsError('');
+    if (!handleValidate()) {
+      // If Additional Details is collapsed, expand and scroll to it
+      if (isAdditionalDetailsCollapsed) {
+        setIsAdditionalDetailsCollapsed(false);
+        setTimeout(() => {
+          additionalDetailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+      }
+      // Check for missing required fields in Additional Details
+      const missingFields = [];
+      if (!startDate) missingFields.push('startDate');
+      if (!endDate) missingFields.push('endDate');
+      // Add more required fields as needed
+      if (missingFields.length > 0) {
+        setAdditionalDetailsError('Please complete the missing fields to continue.');
+      }
+      return;
+    }
 
     if (paymentType === 'Guaranteed') {
       const result = calculateGuaranteedNPV({
@@ -221,12 +241,16 @@ export default function Step1PaymentDetails({
       </div>
 
       {/* Additional Details Collapsible */}
-      <div className="calculator-section-collapsible">
+      <div className="calculator-section-collapsible" ref={additionalDetailsRef}>
         <h3 className="collapsible-header" onClick={() => setIsAdditionalDetailsCollapsed(!isAdditionalDetailsCollapsed)}>
           Additional Details
           <span className={`collapse-icon ${isAdditionalDetailsCollapsed ? 'collapsed' : ''}`}>▼</span>
         </h3>
-
+        {additionalDetailsError && (
+          <div className="alert alert-danger py-2 px-3 mb-2" role="alert" aria-live="polite" style={{ fontSize: '0.98rem' }}>
+            {additionalDetailsError}
+          </div>
+        )}
         {!isAdditionalDetailsCollapsed && (
           <div className="collapsible-content">
             {/* Annual Increase */}
@@ -254,7 +278,6 @@ export default function Step1PaymentDetails({
                 ))}
               </div>
             </div>
-
             {/* Dates */}
             <div className="row mb-3">
               <div className="col-md-6 mb-3">
@@ -273,7 +296,7 @@ export default function Step1PaymentDetails({
                   value={startDate}
                   min="2024-05-14"
                   onChange={(e) => updateField('startDate', e.target.value)}
-                  className={`form-control ${errors.startDate ? 'is-invalid' : ''}`}
+                  className={`form-control ${errors.startDate || additionalDetailsError && !startDate ? 'is-invalid' : ''}`}
                 />
                 {errors.startDate && <div className="invalid-feedback">{errors.startDate}</div>}
               </div>
@@ -292,7 +315,7 @@ export default function Step1PaymentDetails({
                   type="date"
                   value={endDate}
                   onChange={(e) => updateField('endDate', e.target.value)}
-                  className={`form-control ${errors.endDate ? 'is-invalid' : ''}`}
+                  className={`form-control ${errors.endDate || additionalDetailsError && !endDate ? 'is-invalid' : ''}`}
                 />
                 {errors.endDate && <div className="invalid-feedback">{errors.endDate}</div>}
               </div>

@@ -24,17 +24,17 @@ export default function Navbar() {
   }, [pathname]);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-      <div className="container d-flex align-items-center justify-content-between">
-        <Link href="/main" className="navbar-brand d-flex align-items-center gap-2">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm" style={{ borderBottom: '1.5px solid #e0e0e0', minHeight: 68 }}>
+      <div className="container d-flex align-items-center justify-content-between" style={{ paddingTop: 6, paddingBottom: 6 }}>
+        <Link href="/main" className="navbar-brand d-flex align-items-center gap-2" style={{ height: 44 }}>
           <Image
             src="/assets/images/placeholder-logo.png"
             alt="SmarterPayouts Logo"
             width={30}
             height={30}
-            style={{ height: '30px', width: 'auto' }}
+            style={{ height: '30px', width: 'auto', display: 'block' }}
           />
-          <span className="fw-bold">SmarterPayouts</span>
+          <span className="fw-bold" style={{ fontSize: '1.22rem', letterSpacing: '-0.5px', marginLeft: 4 }}>SmarterPayouts</span>
         </Link>
         <button
           className="navbar-toggler"
@@ -42,65 +42,58 @@ export default function Navbar() {
           aria-label="Toggle navigation"
           aria-expanded={!navbarCollapsed}
           onClick={() => setNavbarCollapsed((prev) => !prev)}
+          style={{ border: 'none', boxShadow: 'none', outline: 'none', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 44 }}
         >
-          <span className="navbar-toggler-icon"></span>
+          <span className="navbar-toggler-icon" style={{ fontSize: 26 }}></span>
         </button>
         <div className={`collapse navbar-collapse${!navbarCollapsed ? ' show' : ''}`} id="navbarMain">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/main' ? ' active' : ''}`} href="/main">Home</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/pricing-calculator' ? ' active' : ''}`} href="/pricing-calculator">Early Payout Calculator</Link>
-            </li>
-            <li className="nav-item dropdown">
+          <ul className="navbar-nav ms-auto" style={{ gap: 2 }}>
+            {[
+              { href: '/main', label: 'Home' },
+              { href: '/pricing-calculator', label: 'Early Payout Calculator' },
+            ].map((item) => (
+              <li className="nav-item" key={item.href}>
+                <Link className={`nav-link${pathname === item.href ? ' active' : ''}`} href={item.href} style={{ fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: pathname === item.href ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(pathname === item.href ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+            <li className="nav-item dropdown" style={{ position: 'relative' }}>
               <span
                 className={`nav-link dropdown-toggle${isInProcessSection ? ' active text-success fw-bold' : ''}`}
                 id="processDropdown"
                 role="button"
                 aria-expanded={dropdownOpen}
                 onClick={() => setDropdownOpen((open) => !open)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: isInProcessSection ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(isInProcessSection ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}
               >
                 Our Process
               </span>
-              <ul className={`dropdown-menu${dropdownOpen ? ' show' : ''}`} aria-labelledby="processDropdown">
-                <li><Link className="dropdown-item" href="/get-a-quote">Get A Quote</Link></li>
-                <li><Link className="dropdown-item" href="/review-offer">Review Offer</Link></li>
-                <li><Link className="dropdown-item" href="/court-approval">Court Approval</Link></li>
-                <li><Link className="dropdown-item" href="/get-your-cash">Get Your Cash</Link></li>
+              <ul className={`dropdown-menu${dropdownOpen ? ' show' : ''}`} aria-labelledby="processDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
+                <li><Link className="dropdown-item" href="/get-a-quote" style={{ fontSize: '1.07rem', padding: '0.7rem 1.2rem', display: 'flex', alignItems: 'center', gap: 10, borderRadius: 6, transition: 'background 0.15s', fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>💡</span>Get A Quote</Link></li>
+                <li><Link className="dropdown-item" href="/review-offer" style={{ fontSize: '1.07rem', padding: '0.7rem 1.2rem', display: 'flex', alignItems: 'center', gap: 10, borderRadius: 6, transition: 'background 0.15s', fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>📝</span>Review Offer</Link></li>
+                <li><Link className="dropdown-item" href="/court-approval" style={{ fontSize: '1.07rem', padding: '0.7rem 1.2rem', display: 'flex', alignItems: 'center', gap: 10, borderRadius: 6, transition: 'background 0.15s', fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>⚖️</span>Court Approval</Link></li>
+                <li><Link className="dropdown-item" href="/get-your-cash" style={{ fontSize: '1.07rem', padding: '0.7rem 1.2rem', display: 'flex', alignItems: 'center', gap: 10, borderRadius: 6, transition: 'background 0.15s', fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>💵</span>Get Your Cash</Link></li>
               </ul>
             </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/articles' ? ' active' : ''}`} href="/articles">Articles</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/testimonials' ? ' active' : ''}`} href="/testimonials">⭐ Testimonials</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/credentials' ? ' active' : ''}`} href="/credentials">🛡️ Credentials</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/resources' ? ' active' : ''}`} href="/resources">📚 Resources</Link>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="https://youtube.com" target="_blank" rel="noopener noreferrer">▶️ YouTube Channel</a>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/about' ? ' active' : ''}`} href="/about">About Us</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/faqs' ? ' active' : ''}`} href="/faqs">FAQs</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/contact' ? ' active' : ''}`} href="/contact">Contact Us</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/privacy' ? ' active' : ''}`} href="/privacy">Privacy</Link>
-            </li>
-            <li className="nav-item">
-              <Link className={`nav-link${pathname === '/terms' ? ' active' : ''}`} href="/terms">Terms</Link>
-            </li>
+            {[
+              { href: '/articles', label: 'Articles' },
+              { href: '/testimonials', label: '⭐ Testimonials' },
+              { href: '/credentials', label: '🛡️ Credentials' },
+              { href: '/resources', label: '📚 Resources' },
+              { href: '/youtube-channel', label: '▶️ YouTube Channel' },
+              { href: '/about', label: 'About Us' },
+              { href: '/faqs', label: 'FAQs' },
+              { href: '/contact', label: 'Contact Us' },
+              { href: '/privacy', label: 'Privacy' },
+              { href: '/terms', label: 'Terms' },
+            ].map((item) => (
+              <li className="nav-item" key={item.href}>
+                <Link className={`nav-link${pathname === item.href ? ' active' : ''}`} href={item.href} style={{ fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: pathname === item.href ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(pathname === item.href ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

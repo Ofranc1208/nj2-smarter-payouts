@@ -80,55 +80,39 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
 
   return (
     <div className="step calculator text-center px-3 py-4">
-      
-
-      <div className="bg-white rounded shadow-sm p-4 mx-auto" style={{ maxWidth: '500px' }}>
-        <h2 className="offer-brand mb-3 text-success fw-bold">🎉 Congratulations</h2>
-        <p className="offer-subtitle text-muted mb-4">
-          Here's your Early Payout offer.
-          <br />
+      <div className="bg-white rounded shadow-sm p-4 mx-auto" style={{ maxWidth: '500px', background: 'linear-gradient(90deg, #f8fafc 60%, #fbc23311 100%)', boxShadow: '0 4px 24px rgba(9,180,77,0.08)' }}>
+        <div style={{ fontSize: '1.5rem', marginBottom: 12, lineHeight: 1 }} aria-hidden="true">🎉</div>
+        <h2 className="offer-brand mb-3 text-success fw-bold d-flex align-items-center justify-content-center" style={{ gap: 8, fontSize: '1.18rem', marginBottom: 18 }}>
+          <span style={{ fontSize: '1.18rem' }}>✅</span> Congratulations
+        </h2>
+        <p className="offer-subtitle text-muted mb-3" style={{ fontSize: '1.01rem', marginBottom: 18 }}>
+          Here's your Early Payout offer.<br />
           Funding available in as little as <strong>30 days</strong>.
         </p>
-
-        <ul className="offer-list list-unstyled mb-4">
-          {/*
-            The Lump Sum Value (npv) is intentionally hidden from users.
-            Uncomment the following block if you want to display it again in the future.
-          {typeof npv === 'number' && (
-            <li className="offer-item d-flex justify-content-between px-3 py-2 border-bottom">
-              <span className="offer-label fw-medium">Lump Sum Value</span>
-              <span className="offer-value text-primary fw-bold">${format(npv)}</span>
-            </li>
-          )}
-          */}
-          <li className="offer-item d-flex justify-content-between px-3 py-2 border-bottom">
+        <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '18px 0 18px 0' }} />
+        <ul className="offer-list list-unstyled mb-4" style={{ marginBottom: 24 }}>
+          <li className="offer-item d-flex justify-content-between px-3 py-2 border-bottom" style={{ background: 'transparent', marginBottom: 10 }}>
             <span className="offer-label fw-medium">Min Offer</span>
             <span className="offer-value text-secondary">${format(min)}</span>
           </li>
-
-          <li className="offer-item d-flex flex-column align-items-center px-3 py-3 border-bottom bg-light rounded mb-2">
-            <div className="d-flex align-items-center mb-1">
+          <li className="offer-item d-flex flex-column align-items-center px-3 py-3 border-bottom bg-light rounded mb-3" style={{ position: 'relative', background: '#f8fafc', marginBottom: 18 }}>
+            <div className="d-flex align-items-center mb-2">
               <span className="offer-label fw-medium me-2">Max Payout Offer</span>
             </div>
-            <span className="offer-value text-success fw-bold" style={{ fontSize: '2rem' }}>
+            <span className="offer-value text-success fw-bold" style={{ fontSize: '2rem', animation: 'pop 0.7s cubic-bezier(.23,1.12,.67,1.01)' }}>
               ${format(max)}
             </span>
-            <small className="text-muted mt-1">This is the highest amount you may qualify for.</small>
+            <small className="text-muted mt-2">This is the highest amount you may qualify for.</small>
           </li>
-
           {typeof familyProtectionNPV === 'number' && (
-            <li className="offer-item d-flex justify-content-between px-3 py-2 border-bottom">
+            <li className="offer-item d-flex justify-content-between px-3 py-2 border-bottom" style={{ background: 'transparent', marginBottom: 10 }}>
               <span className="offer-label fw-medium">Family Benefit</span>
               <span className="offer-value text-muted fw-semibold">${format(familyProtectionNPV)}</span>
             </li>
           )}
         </ul>
-
-        <button className="btn btn-warning w-50" onClick={onBack || (() => router.back())}>
-          Back
-        </button>
-
-        <div className="offer-footer mt-5 small text-muted">
+        <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '18px 0 18px 0' }} />
+        <div className="offer-footer mt-5 small text-muted" style={{ marginTop: 32 }}>
           <strong>SmarterPayouts LLC</strong>
           <br />
           123 Main Street, Suite 200, Dallas TX 75201
@@ -142,7 +126,13 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
           </a>
         </div>
       </div>
-
+      <style>{`
+        @keyframes pop {
+          0% { transform: scale(0.7); opacity: 0.5; }
+          60% { transform: scale(1.15); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
       {showModal && <UnlockModal onClose={() => setShowModal(false)} />}
     </div>
   );

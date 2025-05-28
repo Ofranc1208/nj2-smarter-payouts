@@ -209,13 +209,14 @@ const companies: Company[] = [
   },
   {
     name: 'Genworth Life Insurance Company',
+    formerNames: ['GE Capital Assurance', 'General Electric Capital Assurance', 'GE Life & Annuity'],
     phone: '888-436-9678',
-    fax: '',
+    fax: '804-281-6200',
     email: '',
     website: 'https://www.genworth.com',
     address: '6620 West Broad Street, Richmond, VA 23230',
     officeHours: '',
-    verifyPays: false,
+    verifyPays: true,
     acblsadapos: [],
     notes: '',
   },
@@ -291,6 +292,71 @@ const companies: Company[] = [
     acblsadapos: [],
     notes: '',
   },
+  {
+    name: 'Independent Life Insurance Company',
+    formerNames: [],
+    phone: '800-793-7474',
+    fax: '',
+    email: 'info@independent.life',
+    website: 'https://www.independent.life',
+    address: '8950 SW 74th Ct, Suite 2201, Miami, FL 33156',
+    officeHours: '',
+    verifyPays: true,
+    acblsadapos: [],
+    notes: '',
+  },
+  {
+    name: 'USAA Life Insurance Company',
+    formerNames: [],
+    phone: '800-531-8722',
+    fax: '',
+    email: '',
+    website: 'https://www.usaa.com',
+    address: '9800 Fredericksburg Road, San Antonio, TX 78288',
+    officeHours: '',
+    verifyPays: false,
+    acblsadapos: [],
+    notes: '',
+  },
+  {
+    name: 'Hartford Life Insurance Company',
+    formerNames: ['Genworth Life Insurance Company', 'Hartford Life and Annuity Insurance Company'],
+    phone: '800-862-6668',
+    fax: '',
+    email: '',
+    website: 'https://www.genworth.com',
+    address: '6620 West Broad Street, Richmond, VA 23230',
+    officeHours: '',
+    verifyPays: false,
+    acblsadapos: [],
+    notes: 'Hartford Life business was acquired by Genworth in 2004. Some legacy policies may still be serviced under the Hartford name.'
+  },
+  {
+    name: 'United States Life Insurance Company in the City of New York',
+    formerNames: ['AIG', 'American General Life Insurance Company of New York'],
+    phone: '800-221-9039',
+    fax: '',
+    email: '',
+    website: 'https://www.corebridgefinancial.com',
+    address: 'One World Financial Center, 200 Liberty Street, New York, NY 10281',
+    officeHours: '',
+    verifyPays: false,
+    acblsadapos: [],
+    notes: '',
+  },
+  {
+    name: 'Pacific Life & Annuity Company (NY)',
+    formerNames: ['Pacific Life Insurance Company'],
+    phone: '800-800-7646',
+    fax: '',
+    email: '',
+    website: 'https://ssa.pacificlife.com',
+    address: '700 Newport Center Drive, Newport Beach, CA 92660',
+    officeHours: '',
+    verifyPays: false,
+    acblsadapos: [],
+    notes: 'Handles NY-specific structured settlements.'
+  },
 ];
 
 function icon(label: string) {
@@ -317,8 +383,8 @@ export default function ResourcesPage() {
     }
     return true;
   });
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  // Responsive: expand by default on desktop, collapse on mobile
   React.useEffect(() => {
     const handleResize = () => {
       setShowLegend(window.innerWidth >= 768);
@@ -327,32 +393,39 @@ export default function ResourcesPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const filtered = companies.filter(c => {
+  const filtered = companies.filter((c) => {
     const searchLower = search.toLowerCase();
     return (
       c.name.toLowerCase().includes(searchLower) ||
-      (c.formerNames && c.formerNames.some(fn => fn.toLowerCase().includes(searchLower))) ||
-      (c.acblsadapos && c.acblsadapos.some(a => a.toLowerCase().includes(searchLower))) ||
+      (c.formerNames && c.formerNames.some((fn) => fn.toLowerCase().includes(searchLower))) ||
+      (c.acblsadapos && c.acblsadapos.some((a) => a.toLowerCase().includes(searchLower))) ||
       (c.notes && c.notes.toLowerCase().includes(searchLower))
     );
   });
 
   return (
     <section className="py-5" style={{ background: '#f8fafc', minHeight: '100vh' }}>
-      <div className="container" style={{ maxWidth: 950 }}>
-        <h1 className="fw-bold text-success mb-2" style={{ fontSize: '2.1rem', letterSpacing: '-1px' }}>
-          Structured Settlement Insurance Directory
-        </h1>
-        <div className="text-muted mb-3" style={{ fontSize: '1.1rem' }}>
-          Use this directory to look up contact info for companies that provide structured settlement annuities.
-        </div>
+      <div className="container" style={{ maxWidth: 700 }}>
+        <section className="how-fast-hero p-4 rounded mb-4 d-flex flex-column align-items-center justify-content-center shadow-sm" style={{
+          background: 'linear-gradient(90deg, #e9f9f1 60%, #fbc23322 100%)',
+          boxShadow: '0 4px 24px rgba(9,180,77,0.08)',
+          minHeight: '160px',
+          marginBottom: 32
+        }}>
+          <h1 className="fw-bold mb-2 text-success text-center" style={{ fontSize: '2.1rem', letterSpacing: '-1px' }}>
+            Insurance Directory
+          </h1>
+          <div className="text-muted mb-0 text-center" style={{ fontSize: '1.05rem', maxWidth: 600, margin: '0 auto' }}>
+            Use this directory to look up contact info for companies that provide structured settlement annuities.
+          </div>
+        </section>
         <div className="mb-3">
           <button
             className="btn btn-sm btn-outline-secondary mb-2"
             type="button"
             aria-expanded={showLegend}
             aria-controls="acronym-legend"
-            onClick={() => setShowLegend(v => !v)}
+            onClick={() => setShowLegend((v) => !v)}
             style={{ fontSize: '1rem' }}
           >
             {showLegend ? 'Hide Acronym Legend' : 'Show Acronym Legend'}
@@ -369,39 +442,56 @@ export default function ResourcesPage() {
         </div>
         <input
           type="text"
-          className="form-control form-control-lg mb-4"
+          className="form-control mb-4"
           placeholder="Search insurance company, acronym, or note..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ maxWidth: 480 }}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ width: '100%', maxWidth: 480, margin: '0 auto', fontSize: '0.93rem', padding: '0.45rem 0.7rem', boxSizing: 'border-box', textOverflow: 'ellipsis' }}
           aria-label="Search insurance company"
         />
-        <div className="row g-4">
+        <div className="list-group mb-4">
           {filtered.length === 0 && (
-            <div className="col-12 text-center text-muted py-5">No companies found.</div>
+            <div className="text-center text-muted py-5">No companies found.</div>
           )}
           {filtered.map((c, i) => (
-            <div className="col-12 col-md-6" key={c.name + i}>
-              <div className="card shadow-sm h-100" style={{ borderRadius: 16, padding: '1.5rem', minHeight: 240 }}>
-                <h5 className="fw-bold mb-1" style={{ color: '#09b44d', fontSize: '1.15rem' }}>{c.name}</h5>
-                {c.formerNames && c.formerNames.length > 0 && (
-                  <div className="mb-1"><span>{icon('formerNames')}</span> <span className="fw-semibold">Formerly:</span> {c.formerNames.join(', ')}</div>
-                )}
-                {c.phone && <div className="mb-1"><span>{icon('phone')}</span> <span className="fw-semibold">Phone:</span> <a href={`tel:${c.phone.replace(/[^\d]/g, '')}`} className="text-decoration-none">{c.phone}</a></div>}
-                {c.fax && <div className="mb-1"><span>{icon('fax')}</span> <span className="fw-semibold">Fax:</span> {c.fax}</div>}
-                {c.email && <div className="mb-1"><span>{icon('email')}</span> <span className="fw-semibold">Email:</span> <a href={`mailto:${c.email}`} className="text-decoration-none">{c.email}</a></div>}
-                {c.website && <div className="mb-1"><span>{icon('website')}</span> <span className="fw-semibold">Website:</span> <a href={c.website} target="_blank" rel="noopener noreferrer" className="text-decoration-none">{c.website.replace('https://','').replace('www.','')}</a></div>}
-                {c.officeHours && <div className="mb-1"><span>{icon('officeHours')}</span> <span className="fw-semibold">Office Hours:</span> {c.officeHours}</div>}
-                {c.address && <div className="mb-1"><span>{icon('address')}</span> <span className="fw-semibold">Address:</span> {c.address}</div>}
-                {c.acblsadapos && c.acblsadapos.length > 0 && (
-                  <div className="mb-1"><span>{icon('acblsadapos')}</span> <span className="fw-semibold">Structured Settlement Docs:</span> {c.acblsadapos.map(ac => <span key={ac} className="badge bg-light border text-dark me-1" title={acronymDescriptions[ac] || ac}>{ac}</span>)}
+            <div key={c.name + i} className="mb-2">
+              <button
+                className={`list-group-item list-group-item-action fw-bold text-success d-flex justify-content-between align-items-center${openIndex === i ? ' active' : ''}`}
+                style={{ fontSize: '1.08rem', borderRadius: 8, background: openIndex === i ? '#e9f9f1' : '#fff', border: '1px solid #e0e0e0', padding: '1rem 1.2rem', marginBottom: 2, width: '100%' }}
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                aria-expanded={openIndex === i}
+                aria-controls={`company-details-${i}`}
+              >
+                {c.name}
+                <span style={{ fontSize: '1.2rem', marginLeft: 8 }}>{openIndex === i ? '▲' : '▼'}</span>
+              </button>
+              {openIndex === i && (
+                <div id={`company-details-${i}`} className="card shadow-sm" style={{ borderRadius: 14, padding: '1.5rem', marginTop: 2, background: '#fff' }}>
+                  <div style={{ fontSize: '1.01rem' }}>
+                    {c.formerNames && c.formerNames.length > 0 && (
+                      <div className="mb-2"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('formerNames')}</span> <span className="fw-semibold">Formerly:</span> {c.formerNames.join(', ')}</div>
+                    )}
+                    <div className="mb-2">
+                      {c.phone && <div className="mb-1"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('phone')}</span> <span className="fw-semibold">Phone:</span> <a href={`tel:${c.phone.replace(/[^\d]/g, '')}`} className="text-decoration-none">{c.phone}</a></div>}
+                      {c.fax && <div className="mb-1"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('fax')}</span> <span className="fw-semibold">Fax:</span> {c.fax}</div>}
+                      {c.email && <div className="mb-1"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('email')}</span> <span className="fw-semibold">Email:</span> <a href={`mailto:${c.email}`} className="text-decoration-none">{c.email}</a></div>}
+                      {c.website && <div className="mb-1"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('website')}</span> <span className="fw-semibold">Website:</span> <a href={c.website} target="_blank" rel="noopener noreferrer" className="text-decoration-none">{c.website.replace('https://','').replace('www.','')}</a></div>}
+                    </div>
+                    <div style={{ borderBottom: '1px solid #f0f0f0', margin: '12px 0' }}></div>
+                    {c.address && <div className="mb-2"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('address')}</span> <span className="fw-semibold">Address:</span> {c.address}</div>}
+                    {c.officeHours && <div className="mb-2"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('officeHours')}</span> <span className="fw-semibold">Office Hours:</span> {c.officeHours}</div>}
+                    <div style={{ borderBottom: '1px solid #f0f0f0', margin: '12px 0' }}></div>
+                    {c.acblsadapos && c.acblsadapos.length > 0 && (
+                      <div className="mb-2"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('acblsadapos')}</span> <span className="fw-semibold">Structured Settlement Docs:</span> {c.acblsadapos.map(ac => <span key={ac} className="badge bg-light border text-dark me-1" title={acronymDescriptions[ac] || ac}>{ac}</span>)}
+                      </div>
+                    )}
+                    {typeof c.verifyPays !== 'undefined' && c.verifyPays !== '' && (
+                      <div className="mb-2"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('verifyPays')}</span> <span className="fw-semibold">Verify Pays by Phone:</span> {c.verifyPays === true ? <span className="text-success fw-semibold">Yes</span> : <span className="text-danger fw-semibold">No</span>}</div>
+                    )}
+                    {c.notes && <div className="mb-2"><span style={{ fontSize: '1rem', marginRight: 6 }}>{icon('notes')}</span> <span className="fw-semibold">Notes:</span> {c.notes}</div>}
                   </div>
-                )}
-                {typeof c.verifyPays !== 'undefined' && c.verifyPays !== '' && (
-                  <div className="mb-1"><span>{icon('verifyPays')}</span> <span className="fw-semibold">Verify Pays by Phone:</span> {c.verifyPays === true ? <span className="text-success fw-semibold">Yes</span> : <span className="text-danger fw-semibold">No</span>}</div>
-                )}
-                {c.notes && <div className="mb-1"><span>{icon('notes')}</span> <span className="fw-semibold">Notes:</span> {c.notes}</div>}
-              </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
