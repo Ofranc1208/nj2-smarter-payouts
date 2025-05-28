@@ -79,6 +79,15 @@ export default function Navbar() {
               <Link className={`nav-link${pathname === '/testimonials' ? ' active' : ''}`} href="/testimonials">Testimonials</Link>
             </li>
             <li className="nav-item">
+              <Link className={`nav-link${pathname === '/credentials' ? ' active' : ''}`} href="/credentials">Credentials</Link>
+            </li>
+            <li className="nav-item">
+              <Link className={`nav-link${pathname === '/resources' ? ' active' : ''}`} href="/resources">Resources</Link>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube Channel</a>
+            </li>
+            <li className="nav-item">
               <Link className={`nav-link${pathname === '/about' ? ' active' : ''}`} href="/about">About Us</Link>
             </li>
             <li className="nav-item">
