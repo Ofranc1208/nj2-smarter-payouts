@@ -20,6 +20,115 @@ interface Props {
   onBack?: () => void;
 }
 
+// Phone number formatter
+function formatPhoneNumber(value: string) {
+  const cleaned = value.replace(/\D/g, '');
+  const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+  if (!match) return '';
+  let formatted = '';
+  if (match[1]) {
+    formatted = '(' + match[1];
+  }
+  if (match[2]) {
+    formatted += (match[2].length === 3 ? ') ' : '') + match[2];
+  }
+  if (match[3]) {
+    formatted += (match[3].length > 0 ? '-' : '') + match[3];
+  }
+  return formatted;
+}
+
+// OTP input component
+const OTPInput: React.FC<{
+  value: string;
+  onChange: (val: string) => void;
+  disabled?: boolean;
+  loading?: boolean;
+}> = ({ value, onChange, disabled, loading }) => {
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+  const [otpArr, setOtpArr] = useState<string[]>(Array(6).fill(''));
+
+  useEffect(() => {
+    setOtpArr(value.padEnd(6, '').split(''));
+  }, [value]);
+
+  const handleChange = (idx: number, val: string) => {
+    if (!/\d/.test(val) && val !== '') return;
+    const arr = [...otpArr];
+    arr[idx] = val;
+    setOtpArr(arr);
+    onChange(arr.join(''));
+    if (val && idx < 5) {
+      inputsRef.current[idx + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (otpArr[idx]) {
+        // Clear current
+        const arr = [...otpArr];
+        arr[idx] = '';
+        setOtpArr(arr);
+        onChange(arr.join(''));
+      } else if (idx > 0) {
+        // Move to previous
+        inputsRef.current[idx - 1]?.focus();
+      }
+    } else if (e.key === 'ArrowLeft' && idx > 0) {
+      inputsRef.current[idx - 1]?.focus();
+    } else if (e.key === 'ArrowRight' && idx < 5) {
+      inputsRef.current[idx + 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pasted) {
+      setOtpArr(pasted.padEnd(6, '').split(''));
+      onChange(pasted);
+      if (pasted.length < 6) {
+        inputsRef.current[pasted.length]?.focus();
+      } else {
+        inputsRef.current[5]?.blur();
+      }
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '1rem 0' }}>
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <input
+          key={idx}
+          ref={el => { inputsRef.current[idx] = el; }}
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          maxLength={1}
+          value={otpArr[idx] || ''}
+          onChange={e => handleChange(idx, e.target.value.replace(/\D/g, ''))}
+          onKeyDown={e => handleKeyDown(idx, e)}
+          onPaste={handlePaste}
+          disabled={disabled || loading}
+          style={{
+            width: 40,
+            height: 48,
+            textAlign: 'center',
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            border: '2px solid #dee2e6',
+            borderRadius: 8,
+            backgroundColor: disabled || loading ? '#f8f9fa' : 'white',
+            transition: 'all 0.2s ease',
+          }}
+          autoFocus={idx === 0 && !value}
+        />
+      ))}
+    </div>
+  );
+};
+
 export default function Step3OfferSheet({ calculationResult, formData, onBack }: Props) {
   const router = useRouter();
   const [unlocked, setUnlocked] = useState(false);
@@ -255,11 +364,14 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
                 <p style={{ marginBottom: '1rem', color: '#555' }}>Enter your phone number to unlock your personalized offer.</p>
                 <input
                   type="tel"
-                  placeholder="e.g. 561-568-3128"
-                  value={phoneDigits}
-                  onChange={handleInputChange}
+                  placeholder="(561) 568-3128"
+                  value={formatPhoneNumber(phoneDigits)}
+                  onChange={e => {
+                    let val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setPhoneDigits(val);
+                  }}
                   disabled={loading}
-                  maxLength={12}
+                  maxLength={14}
                   pattern="[0-9-]*"
                   inputMode="numeric"
                   style={{
@@ -273,12 +385,12 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
                     fontSize: '1.1rem',
                     marginBottom: '0.5rem',
                   }}
-                  onKeyPress={(e) => {
+                  onKeyPress={e => {
                     if (!/[\d]/.test(e.key)) {
                       e.preventDefault();
                     }
                   }}
-                  onPaste={(e) => {
+                  onPaste={e => {
                     e.preventDefault();
                     const pastedText = e.clipboardData.getData('text');
                     const cleaned = pastedText.replace(/\D/g, '').slice(0, 10);
@@ -311,32 +423,11 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
               <>
                 <h2 style={{ color: '#22b455' }}>Enter Verification Code</h2>
                 <p style={{ color: '#555' }}>We sent a 6-digit code to your phone.</p>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={6}
-                  value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-                  disabled={loading}
-                  style={{
-                    width: '100%',
-                    height: '48px',
-                    textAlign: 'center',
-                    fontSize: '1.25rem',
-                    fontWeight: 600,
-                    border: '2px solid #dee2e6',
-                    borderRadius: '8px',
-                    backgroundColor: loading ? '#f8f9fa' : 'white',
-                    transition: 'all 0.2s ease',
-                    marginBottom: '1rem',
-                  }}
-                  onFocus={e => e.target.select()}
-                />
+                <OTPInput value={otp} onChange={setOtp} disabled={loading} loading={loading} />
                 {firebaseError && <div style={{ color: '#dc3545', fontSize: '0.95rem', marginBottom: '0.75rem' }}>{firebaseError}</div>}
                 <button
                   onClick={handleVerifyCode}
-                  disabled={loading}
+                  disabled={loading || otp.length !== 6}
                   style={{
                     width: '100%',
                     margin: '1rem 0 0 0',
