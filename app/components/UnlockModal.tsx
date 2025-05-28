@@ -276,9 +276,7 @@ const UnlockModal: React.FC<UnlockModalProps> = ({ onClose }) => {
         timestamp: serverTimestamp()
       });
 
-      if (onClose) {
-        setTimeout(onClose, 1500);
-      }
+      onClose?.();
     } catch (error: any) {
       console.error('❌ Invalid code:', error);
       let errorMessage = 'Invalid verification code. Try again.';
