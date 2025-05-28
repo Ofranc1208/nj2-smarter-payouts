@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { calculateMinMaxNPV } from '../utils/npvCalculations';
 import { AMOUNT_ADJUSTMENTS } from '../utils/npvConfig';
@@ -15,14 +15,18 @@ interface Props {
 export default function Step3OfferSheet({ calculationResult, formData, onBack }: Props) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const bannerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowModal(true);
-    }, 12000); // 12 seconds
-
-    return () => clearTimeout(timer);
-  }, []);
+    if (!unlocked) {
+      const timer = setTimeout(() => {
+        setShowModal(true);
+      }, 12000); // 12 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [unlocked]);
 
   // Remove ?result=... from the URL after showing the result (for lump sum flow)
   useEffect(() => {
@@ -32,6 +36,23 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
       window.history.replaceState({}, document.title, url.pathname + url.search);
     }
   }, []);
+
+  // Clean up banner timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
+    };
+  }, []);
+
+  const handleUnlockSuccess = () => {
+    setUnlocked(true);
+    setShowModal(false);
+    setShowBanner(true);
+    if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
+    bannerTimeoutRef.current = setTimeout(() => {
+      setShowBanner(false);
+    }, 2500); // 2.5 seconds
+  };
 
   const { minOffer, maxOffer, familyProtectionNPV, npv } = calculationResult || {};
 
@@ -80,6 +101,25 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
 
   return (
     <div className="step calculator text-center px-3 py-4">
+      {showBanner && (
+        <div style={{
+          background: '#e6f9ed',
+          color: '#22b455',
+          borderRadius: '8px',
+          padding: '0.75rem 1.5rem',
+          margin: '0 auto 1.5rem auto',
+          maxWidth: 400,
+          fontWeight: 600,
+          fontSize: '1.1rem',
+          boxShadow: '0 2px 8px rgba(34,180,85,0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+        }}>
+          <span role="img" aria-label="party">🎉</span> Offer Unlocked!
+        </div>
+      )}
       <div className="bg-white rounded shadow-sm p-4 mx-auto" style={{ maxWidth: '500px', background: 'linear-gradient(90deg, #f8fafc 60%, #fbc23311 100%)', boxShadow: '0 4px 24px rgba(9,180,77,0.08)' }}>
         <div style={{ fontSize: '1.5rem', marginBottom: 12, lineHeight: 1 }} aria-hidden="true">🎉</div>
         <h2 className="offer-brand mb-3 text-success fw-bold d-flex align-items-center justify-content-center" style={{ gap: 8, fontSize: '1.18rem', marginBottom: 18 }}>
@@ -135,7 +175,9 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
           100% { transform: scale(1); opacity: 1; }
         }
       `}</style>
-      {showModal && <UnlockModal onClose={() => setShowModal(false)} />}
+      {!unlocked && showModal && (
+        <UnlockModal onClose={handleUnlockSuccess} />
+      )}
     </div>
   );
 }
