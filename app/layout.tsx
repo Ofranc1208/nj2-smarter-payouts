@@ -36,8 +36,16 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <title>SmarterPayouts - Structured Settlement Calculator</title>
-        <meta name="description" content="Calculate and manage your structured settlement payments. Get instant quotes, transparent pricing, and a 100% digital process." />
+        <link rel="icon" href="/assets/images/favicon_without_text.ico" type="image/x-icon" />
+        <title>SmarterPayouts – The First Real-Time Structured Settlement Calculator</title>
+        <meta name="description" content="Instantly calculate your structured settlement lump sum payout with the industry's first real-time, logic-driven calculator. No sales calls, no personal info required." />
+        <meta property="og:title" content="SmarterPayouts – The First Real-Time Structured Settlement Calculator" />
+        <meta property="og:description" content="Instantly calculate your structured settlement lump sum payout with the industry's first real-time, logic-driven calculator. No sales calls, no personal info required." />
+        <meta property="og:image" content="/assets/images/og-image.jpg" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://smarterpayouts.com" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="/assets/images/og-image.jpg" />
       </head>
       <body className={inter.className}>
         <Navbar />
