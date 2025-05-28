@@ -181,7 +181,7 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
         }
       `}</style>
       {!unlocked && showModal && (
-        <UnlockModal onClose={handleUnlockSuccess} />
+        <UnlockModal key={showModal ? 'open' : 'closed'} onClose={handleUnlockSuccess} />
       )}
     </div>
   );
