@@ -34,7 +34,7 @@ export default function Navbar() {
             height={30}
             style={{ height: '30px', width: 'auto', display: 'block' }}
           />
-          <span className="fw-bold md:text-base md:font-semibold md:tracking-tight" style={{ fontSize: '1.22rem', letterSpacing: '-0.5px', marginLeft: 4 }}>SmarterPayouts</span>
+          <span className="fw-bold md:text-base md:font-semibold md:tracking-tight" style={{ fontSize: '1.22rem', letterSpacing: '-0.5px', marginLeft: 4 }}>Smarter Payouts</span>
         </Link>
         <button
           className="navbar-toggler"
