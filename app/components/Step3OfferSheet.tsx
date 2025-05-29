@@ -1,29 +1,17 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { calculateMinMaxNPV } from '../utils/npvCalculations';
 import { AMOUNT_ADJUSTMENTS } from '../utils/npvConfig';
-import { auth, db, RecaptchaVerifier } from '../utils/firebase';
-import { signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
+import { db } from '../utils/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-
-declare global {
-  interface Window {
-    recaptchaVerifier?: RecaptchaVerifier | null;
-  }
-}
-
-interface Props {
-  calculationResult: any;
-  formData: any;
-  onBack?: () => void;
-}
+import styles from './OfferConfirmation.module.css';
 
 // Phone number formatter
 function formatPhoneNumber(value: string) {
   const cleaned = value.replace(/\D/g, '');
-  const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+  const match = cleaned.match(/^(\\d{0,3})(\d{0,3})(\d{0,4})$/);
   if (!match) return '';
   let formatted = '';
   if (match[1]) {
@@ -38,231 +26,64 @@ function formatPhoneNumber(value: string) {
   return formatted;
 }
 
-// OTP input component
-const OTPInput: React.FC<{
-  value: string;
-  onChange: (val: string) => void;
-  disabled?: boolean;
-  loading?: boolean;
-}> = ({ value, onChange, disabled, loading }) => {
-  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-  const [otpArr, setOtpArr] = useState<string[]>(Array(6).fill(''));
+// Placeholder for email sending
+function sendEmail(phone: string, offerCode: string) {
+  // Implement with EmailJS, Firebase Functions, etc.
+  console.log('Send email to oscar.francis1225@gmail.com:', phone, offerCode);
+}
 
-  useEffect(() => {
-    setOtpArr(value.padEnd(6, '').split(''));
-  }, [value]);
-
-  const handleChange = (idx: number, val: string) => {
-    if (!/\d/.test(val) && val !== '') return;
-    const arr = [...otpArr];
-    arr[idx] = val;
-    setOtpArr(arr);
-    onChange(arr.join(''));
-    if (val && idx < 5) {
-      inputsRef.current[idx + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace') {
-      if (otpArr[idx]) {
-        // Clear current
-        const arr = [...otpArr];
-        arr[idx] = '';
-        setOtpArr(arr);
-        onChange(arr.join(''));
-      } else if (idx > 0) {
-        // Move to previous
-        inputsRef.current[idx - 1]?.focus();
-      }
-    } else if (e.key === 'ArrowLeft' && idx > 0) {
-      inputsRef.current[idx - 1]?.focus();
-    } else if (e.key === 'ArrowRight' && idx < 5) {
-      inputsRef.current[idx + 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    if (pasted) {
-      setOtpArr(pasted.padEnd(6, '').split(''));
-      onChange(pasted);
-      if (pasted.length < 6) {
-        inputsRef.current[pasted.length]?.focus();
-      } else {
-        inputsRef.current[5]?.blur();
-      }
-    }
-  };
-
-  return (
-    <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '1rem 0' }}>
-      {Array.from({ length: 6 }).map((_, idx) => (
-        <input
-          key={idx}
-          ref={el => { inputsRef.current[idx] = el; }}
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={1}
-          value={otpArr[idx] || ''}
-          onChange={e => handleChange(idx, e.target.value.replace(/\D/g, ''))}
-          onKeyDown={e => handleKeyDown(idx, e)}
-          onPaste={handlePaste}
-          disabled={disabled || loading}
-          style={{
-            width: 40,
-            height: 48,
-            textAlign: 'center',
-            fontSize: '1.25rem',
-            fontWeight: 600,
-            border: '2px solid #dee2e6',
-            borderRadius: 8,
-            backgroundColor: disabled || loading ? '#f8f9fa' : 'white',
-            transition: 'all 0.2s ease',
-          }}
-          autoFocus={idx === 0 && !value}
-        />
-      ))}
-    </div>
-  );
-};
-
-export default function Step3OfferSheet({ calculationResult, formData, onBack }: Props) {
+export default function Step3OfferSheet({ calculationResult, formData, onBack }: { calculationResult: any, formData: any, onBack?: () => void }) {
   const router = useRouter();
-  const [unlocked, setUnlocked] = useState(false);
-  const [showBanner, setShowBanner] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [phoneDigits, setPhoneDigits] = useState('');
-  const [otp, setOtp] = useState('');
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [loading, setLoading] = useState(false);
-  const [firebaseError, setFirebaseError] = useState<string | null>(null);
-  const bannerTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [confirmation, setConfirmation] = useState<string | null>(null);
+  const [inputError, setInputError] = useState<string | null>(null);
   const overlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Always render the offer results immediately
-
-  // Show overlay after 12 seconds (if not unlocked)
+  // Show overlay after 12 seconds
   useEffect(() => {
-    if (!unlocked) {
-      overlayTimeoutRef.current = setTimeout(() => {
-        setShowOverlay(true);
-      }, 12000);
-      return () => {
-        if (overlayTimeoutRef.current) clearTimeout(overlayTimeoutRef.current);
-      };
-    }
-  }, [unlocked]);
-
-  // Clean up banner timeout on unmount
-  useEffect(() => {
+    overlayTimeoutRef.current = setTimeout(() => {
+      setShowOverlay(true);
+    }, 12000);
     return () => {
-      if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
       if (overlayTimeoutRef.current) clearTimeout(overlayTimeoutRef.current);
     };
   }, []);
 
-  // On unlock, hide overlay and show banner
-  useEffect(() => {
-    if (unlocked) {
-      setShowOverlay(false);
-      setShowBanner(true);
-      if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
-      bannerTimeoutRef.current = setTimeout(() => {
-        setShowBanner(false);
-      }, 2500);
+  // Offer code generator
+  function generateOfferCode(phone: string) {
+    const cleaned = phone.replace(/\D/g, '');
+    let last4 = cleaned.slice(-4);
+    if (last4.length < 4) {
+      last4 = (Math.floor(1000 + Math.random() * 9000)).toString();
     }
-  }, [unlocked]);
+    return `PAYOUT-${last4}`;
+  }
 
-  // Remove ?result=... from the URL after showing the result (for lump sum flow)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.history && window.location.search.includes('result=')) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('result');
-      window.history.replaceState({}, document.title, url.pathname + url.search);
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log('[Step3OfferSheet] showOverlay:', showOverlay, 'unlocked:', unlocked);
-  }, [showOverlay, unlocked]);
-
-  // Phone/OTP logic
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.startsWith('1') && value.length === 11) {
-      value = value.slice(1);
-    }
-    value = value.slice(0, 10);
-    setPhoneDigits(value);
-  };
-
-  const handleSendCode = async () => {
+  // Handle phone submit (forgiving validation)
+  function handlePhoneSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setLoading(true);
-    setFirebaseError(null);
-    let fullPhone = phoneDigits;
-    if (phoneDigits.length === 10) {
-      fullPhone = `+1${phoneDigits}`;
-    } else if (phoneDigits.length === 11 && phoneDigits.startsWith('1')) {
-      fullPhone = `+${phoneDigits}`;
-    } else {
-      setFirebaseError('📱 Please enter a valid 10-digit phone number');
+    setInputError(null);
+    const cleaned = phoneDigits.replace(/\D/g, '');
+    if (cleaned.length !== 10) {
+      setInputError('Please enter a valid US phone number');
       setLoading(false);
       return;
     }
-    let appVerifier: RecaptchaVerifier | undefined = undefined;
-    if (!(window.location.hostname === 'localhost' && (auth as any).settings?.appVerificationDisabledForTesting)) {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
-        await window.recaptchaVerifier.render();
-      }
-      appVerifier = window.recaptchaVerifier as RecaptchaVerifier;
-    }
-    if (!appVerifier) {
-      setFirebaseError('Verification system not ready. Please try again.');
-      setLoading(false);
-      return;
-    }
-    try {
-      const result = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
-      setConfirmationResult(result);
-      setStep('otp');
-    } catch (err: any) {
-      setFirebaseError('Failed to send verification code.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fullPhone = `+1${cleaned}`;
+    const offerCode = generateOfferCode(cleaned);
+    // Test mode: just log
+    console.log('Test Mode – Submitted phone number:', fullPhone, 'Offer Code:', offerCode);
+    sendEmail(fullPhone, offerCode);
+    setConfirmation(`${fullPhone}|${offerCode}`);
+    setShowOverlay(false);
+    setLoading(false);
+  }
 
-  const handleVerifyCode = async () => {
-    setLoading(true);
-    setFirebaseError(null);
-    if (otp.length !== 6) {
-      setFirebaseError('⚠️ Enter the 6-digit code sent to your phone');
-      setLoading(false);
-      return;
-    }
-    try {
-      if (!confirmationResult) throw new Error('No confirmation result available');
-      await confirmationResult.confirm(otp);
-      await addDoc(collection(db, 'verifiedPhones'), {
-        phone: `+1${phoneDigits}`,
-        timestamp: serverTimestamp()
-      });
-      setUnlocked(true);
-    } catch (error: any) {
-      setFirebaseError('Invalid verification code. Try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Offer calculation logic (unchanged)
   const { minOffer, maxOffer, familyProtectionNPV, npv } = calculationResult || {};
-
-  // If minOffer/maxOffer are not present, try to calculate from formData (for legacy/other flows)
   let min = minOffer, max = maxOffer;
   if ((typeof min !== 'number' || typeof max !== 'number') && formData) {
     const minMax = calculateMinMaxNPV({
@@ -280,19 +101,12 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
     min = minMax.minOffer;
     max = minMax.maxOffer;
   }
-
-  const format = (val: number): string =>
-    val?.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
+  const format = (val: number) => val?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   let noOfferMessage = 'No offer available.';
   const paymentType = formData?.paymentType || '';
   if (paymentType === 'Guaranteed') noOfferMessage = 'No Guaranteed offer available.';
   else if (paymentType === 'Life Contingent') noOfferMessage = 'No Life Contingent offer available.';
   else if (paymentType === 'Lump Sum') noOfferMessage = 'No Lump Sum offer available.';
-
   if (!min || !max || isNaN(min) || isNaN(max)) {
     return (
       <div className="calculator text-center p-4">
@@ -304,32 +118,13 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
       </div>
     );
   }
-
   return (
     <div className="step calculator text-center px-3 py-4" style={{ position: 'relative' }}>
-      {showBanner && (
-        <div style={{
-          background: '#e6f9ed',
-          color: '#22b455',
-          borderRadius: '8px',
-          padding: '0.75rem 1.5rem',
-          margin: '0 auto 1.5rem auto',
-          maxWidth: 400,
-          fontWeight: 600,
-          fontSize: '1.1rem',
-          boxShadow: '0 2px 8px rgba(34,180,85,0.08)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-          zIndex: 1200,
-          position: 'relative',
-        }}>
-          <span role="img" aria-label="party">🎉</span> Offer Unlocked!
-        </div>
-      )}
-      {/* Overlay for unlock */}
-      {showOverlay && (
+      {/* Confirmation block removed as requested */}
+      {/* {confirmation && (
+        <div className={styles.confirmationCard}> ... </div>
+      )} */}
+      {showOverlay && !confirmation && (
         <div style={{
           position: 'fixed',
           inset: 0,
@@ -343,7 +138,7 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
           transition: 'opacity 0.5s',
           opacity: showOverlay ? 1 : 0,
         }}>
-          <div style={{
+          <form onSubmit={handlePhoneSubmit} style={{
             background: 'white',
             borderRadius: '12px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
@@ -357,96 +152,93 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
             textAlign: 'center',
             gap: '1.25rem',
           }}>
-            <div id="recaptcha-container"></div>
-            {step === 'phone' && (
-              <>
-                <h2 style={{ marginBottom: '0.5rem', color: '#22b455' }}>Unlock Your Offer</h2>
-                <p style={{ marginBottom: '1rem', color: '#555' }}>Enter your phone number to unlock your personalized offer.</p>
-                <input
-                  type="tel"
-                  placeholder="(561) 568-3128"
-                  value={formatPhoneNumber(phoneDigits)}
-                  onChange={e => {
-                    let val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                    setPhoneDigits(val);
-                  }}
-                  disabled={loading}
-                  maxLength={14}
-                  pattern="[0-9-]*"
-                  inputMode="numeric"
+            <h2 style={{ marginBottom: '0.5rem', color: '#22b455' }}>To view and claim your offer, please enter your phone number.</h2>
+            <input
+              type="tel"
+              inputMode="tel"
+              placeholder="(555) 555-1234"
+              value={phoneDigits}
+              onChange={e => {
+                setPhoneDigits(e.target.value);
+                setInputError(null);
+              }}
+              disabled={loading}
+              maxLength={20}
+              style={{
+                fontFamily: 'monospace',
+                letterSpacing: '0.5px',
+                width: '100%',
+                textAlign: 'center',
+                padding: '0.75rem',
+                borderRadius: '6px',
+                border: inputError ? '2px solid #dc3545' : '1.5px solid #ccc',
+                fontSize: '1.1rem',
+                marginBottom: '0.5rem',
+              }}
+              required
+              readOnly={false}
+            />
+            {inputError && <div style={{ color: '#dc3545', fontWeight: 500, fontSize: '1rem', marginBottom: 4 }}>{inputError}</div>}
+            <div style={{
+              width: '100%',
+              background: 'transparent',
+              fontWeight: 400,
+              fontSize: '1.07rem',
+              color: '#222',
+              margin: '0.2rem 0 0.2rem 0',
+              padding: 0,
+              lineHeight: 1.5,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+            }}>
+              <div style={{ marginBottom: '0.25rem' }}>Your offer code is:</div>
+              <div style={{ fontFamily: 'monospace', fontWeight: 500, fontSize: '1.13rem', marginBottom: '0.7rem' }}>{generateOfferCode(phoneDigits)}</div>
+              <div style={{ marginBottom: '0.15rem' }}>If you have any questions, call us at</div>
+              <div style={{ fontWeight: 500 }}>
+                <a
+                  href="tel:+19547649750"
                   style={{
-                    fontFamily: 'monospace',
-                    letterSpacing: '0.5px',
-                    width: '100%',
-                    textAlign: 'center',
-                    padding: '0.75rem',
-                    borderRadius: '6px',
-                    border: '1.5px solid #ccc',
-                    fontSize: '1.1rem',
-                    marginBottom: '0.5rem',
+                    color: '#222',
+                    textDecoration: 'none',
+                    fontWeight: 400,
+                    cursor: 'pointer',
+                    transition: 'color 0.18s, transform 0.18s',
                   }}
-                  onKeyPress={e => {
-                    if (!/[\d]/.test(e.key)) {
-                      e.preventDefault();
-                    }
+                  onMouseOver={e => {
+                    e.currentTarget.style.color = '#22b455';
+                    e.currentTarget.style.transform = 'scale(1.045)';
                   }}
-                  onPaste={e => {
-                    e.preventDefault();
-                    const pastedText = e.clipboardData.getData('text');
-                    const cleaned = pastedText.replace(/\D/g, '').slice(0, 10);
-                    setPhoneDigits(cleaned);
-                  }}
-                />
-                {firebaseError && <div style={{ color: '#dc3545', fontSize: '0.95rem', marginBottom: '0.75rem' }}>{firebaseError}</div>}
-                <button
-                  onClick={handleSendCode}
-                  disabled={loading}
-                  style={{
-                    width: '100%',
-                    margin: '1rem 0 0 0',
-                    padding: '0.75rem',
-                    fontSize: '1.1rem',
-                    borderRadius: '6px',
-                    fontWeight: 600,
-                    background: '#22b455',
-                    color: 'white',
-                    border: 'none',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 2px 8px rgba(34,180,85,0.08)'
+                  onMouseOut={e => {
+                    e.currentTarget.style.color = '#222';
+                    e.currentTarget.style.transform = 'scale(1)';
                   }}
                 >
-                  {loading ? 'Sending...' : 'Send Code'}
-                </button>
-              </>
-            )}
-            {step === 'otp' && (
-              <>
-                <h2 style={{ color: '#22b455' }}>Enter Verification Code</h2>
-                <p style={{ color: '#555' }}>We sent a 6-digit code to your phone.</p>
-                <OTPInput value={otp} onChange={setOtp} disabled={loading} loading={loading} />
-                {firebaseError && <div style={{ color: '#dc3545', fontSize: '0.95rem', marginBottom: '0.75rem' }}>{firebaseError}</div>}
-                <button
-                  onClick={handleVerifyCode}
-                  disabled={loading || otp.length !== 6}
-                  style={{
-                    width: '100%',
-                    margin: '1rem 0 0 0',
-                    padding: '0.75rem',
-                    fontSize: '1.1rem',
-                    borderRadius: '6px',
-                    fontWeight: 600,
-                    background: '#22b455',
-                    color: 'white',
-                    border: 'none',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 2px 8px rgba(34,180,85,0.08)'
-                  }}
-                >
-                  {loading ? 'Verifying...' : 'Verify'}
-                </button>
-              </>
-            )}
-          </div>
+                  (954) 764-9750
+                </a>.
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={loading || phoneDigits.length < 7}
+              style={{
+                width: '100%',
+                margin: '1rem 0 0 0',
+                padding: '0.75rem',
+                fontSize: '1.1rem',
+                borderRadius: '6px',
+                fontWeight: 600,
+                background: '#22b455',
+                color: 'white',
+                border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                boxShadow: '0 2px 8px rgba(34,180,85,0.08)'
+              }}
+            >
+              {loading ? 'Submitting...' : 'Unlock Offer'}
+            </button>
+          </form>
         </div>
       )}
       <div className="bg-white rounded shadow-sm p-4 mx-auto" style={{ maxWidth: '500px', background: 'linear-gradient(90deg, #f8fafc 60%, #fbc23311 100%)', boxShadow: '0 4px 24px rgba(9,180,77,0.08)' }}>
