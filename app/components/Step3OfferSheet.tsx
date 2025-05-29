@@ -62,7 +62,7 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
   }
 
   // Handle phone submit (forgiving validation)
-  function handlePhoneSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handlePhoneSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setInputError(null);
@@ -74,8 +74,32 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
     }
     const fullPhone = `+1${cleaned}`;
     const offerCode = generateOfferCode(cleaned);
-    // Test mode: just log
-    console.log('Test Mode – Submitted phone number:', fullPhone, 'Offer Code:', offerCode);
+    // Prepare extra fields if available
+    const extraData: Record<string, any> = {};
+    if (formData?.amount) extraData.paymentAmount = formData.amount;
+    if (formData?.startDate) extraData.startDate = formData.startDate;
+    if (formData?.paymentType) extraData.lifeContingent = formData.paymentType === 'Life Contingent';
+    if (typeof max === 'number') extraData.maxOffer = max;
+    if (typeof min === 'number') extraData.minOffer = min;
+    if (formData?.endDate) extraData.endDate = formData.endDate;
+    // Add lifeContingentAnswers if available
+    if (formData?.lcpAnswers && typeof formData.lcpAnswers === 'object') {
+      extraData.lifeContingentAnswers = formData.lcpAnswers;
+    } else if (formData?.lifeContingentAnswers && typeof formData.lifeContingentAnswers === 'object') {
+      extraData.lifeContingentAnswers = formData.lifeContingentAnswers;
+    }
+    // Save to Firestore
+    try {
+      await addDoc(collection(db, "offer_submissions"), {
+        phone: cleaned,
+        offerCode,
+        timestamp: serverTimestamp(),
+        ...extraData
+      });
+    } catch (err) {
+      console.error('Firestore write failed:', err);
+      // Do not block UI or crash
+    }
     sendEmail(fullPhone, offerCode);
     setConfirmation(`${fullPhone}|${offerCode}`);
     setShowOverlay(false);
@@ -266,9 +290,9 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
             <small className="text-muted mt-2">This is the highest amount you may qualify for.</small>
           </li>
           {typeof familyProtectionNPV === 'number' && (
-            <li className="offer-item d-flex justify-content-between px-3 py-2 border-bottom" style={{ background: 'transparent', marginBottom: 10 }}>
-              <span className="offer-label fw-medium">Family Benefit</span>
-              <span className="offer-value text-muted fw-semibold">${format(familyProtectionNPV)}</span>
+            <li className="offer-item d-flex flex-column align-items-center px-3 py-2 border-bottom" style={{ background: 'transparent', marginBottom: 10 }}>
+              <span className="offer-label fw-medium" style={{ marginBottom: 2 }}>Family Benefit</span>
+              <span className="offer-value text-muted fw-semibold" style={{ fontSize: '1.13rem' }}>${format(familyProtectionNPV)}</span>
             </li>
           )}
         </ul>

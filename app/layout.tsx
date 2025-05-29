@@ -41,11 +41,11 @@ export default function RootLayout({
         <meta name="description" content="Instantly calculate your structured settlement lump sum payout with the industry's first real-time, logic-driven calculator. No sales calls, no personal info required." />
         <meta property="og:title" content="SmarterPayouts – The First Real-Time Structured Settlement Calculator" />
         <meta property="og:description" content="Instantly calculate your structured settlement lump sum payout with the industry's first real-time, logic-driven calculator. No sales calls, no personal info required." />
-        <meta property="og:image" content="/assets/images/og-image.jpg" />
+        <meta property="og:image" content="/assets/images/og-image.png" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://smarterpayouts.com" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="/assets/images/og-image.jpg" />
+        <meta name="twitter:image" content="/assets/images/og-image.png" />
       </head>
       <body className={inter.className}>
         <Navbar />

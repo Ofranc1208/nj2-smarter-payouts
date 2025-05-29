@@ -53,7 +53,10 @@ export default function Navbar() {
               { href: '/pricing-calculator', label: 'Early Payout Calculator' },
             ].map((item) => (
               <li className="nav-item me-2" key={item.href}>
-                <Link className={`nav-link${pathname === item.href ? ' active' : ''}`} href={item.href} style={{ fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: pathname === item.href ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(pathname === item.href ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}>
+                <Link className={`nav-link${pathname === item.href ? ' active' : ''}`} href={item.href} 
+                  style={{ fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: pathname === item.href ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(pathname === item.href ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}
+                  onClick={() => setNavbarCollapsed(true)}
+                >
                   {item.label}
                 </Link>
               </li>
@@ -70,10 +73,10 @@ export default function Navbar() {
                 Our Process
               </span>
               <ul className={`dropdown-menu${dropdownOpen ? ' show' : ''}`} aria-labelledby="processDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-a-quote" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>💡</span>Get A Quote</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/review-offer" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>📝</span>Review Offer</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/court-approval" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>⚖️</span>Court Approval</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-your-cash" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }}><span style={{fontSize: '1.15em'}}>💵</span>Get Your Cash</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-a-quote" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>💡</span>Get A Quote</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/review-offer" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📝</span>Review Offer</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/court-approval" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>⚖️</span>Court Approval</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-your-cash" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>💵</span>Get Your Cash</Link></li>
               </ul>
             </li>
             {[
@@ -89,7 +92,10 @@ export default function Navbar() {
               { href: '/terms', label: 'Terms' },
             ].map((item) => (
               <li className="nav-item me-2" key={item.href}>
-                <Link className={`nav-link${pathname === item.href ? ' active' : ''}`} href={item.href} style={{ fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: pathname === item.href ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(pathname === item.href ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}>
+                <Link className={`nav-link${pathname === item.href ? ' active' : ''}`} href={item.href} 
+                  style={{ fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: pathname === item.href ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(pathname === item.href ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}
+                  onClick={() => setNavbarCollapsed(true)}
+                >
                   {item.label}
                 </Link>
               </li>
