@@ -17,25 +17,13 @@ export const metadata: Metadata = {
   description: 'Calculate and manage your structured settlement payments',
 }
 
-// Helper to check for hideNavbar on the child page
-function shouldHideNavbar(children: ReactNode): boolean {
-  // Next.js passes the page as a React element, so we can check its type and props
-  // If the child is a React element and has type with hideNavbar, return true
-  // This is a best-effort check for the App Router
-  // @ts-ignore
-  if (children && children.type && children.type.hideNavbar) {
-    // @ts-ignore
-    return children.type.hideNavbar === true;
-  }
-  return false;
-}
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const hideNavbar = shouldHideNavbar(children);
+  const pathname = usePathname();
+  const hideNavbar = pathname === '/';
   return (
     <html lang="en">
       <head>
