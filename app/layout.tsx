@@ -8,7 +8,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import FABSpeedDial from './components/FABSpeedDial'
 import { ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
+import ClientNavbarWrapper from './components/ClientNavbarWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,8 +22,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname();
-  const hideNavbar = pathname === '/';
   return (
     <html lang="en">
       <head>
@@ -53,7 +51,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         {/* Only render Navbar if not hidden by page config */}
-        {!hideNavbar && <Navbar />}
+        <ClientNavbarWrapper />
         <main className="main-content" style={{ width: '100vw', maxWidth: '100vw', margin: 0, padding: 0 }}>
           {children}
         </main>
