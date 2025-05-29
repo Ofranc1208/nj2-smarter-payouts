@@ -7,6 +7,8 @@ import Script from 'next/script'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import FABSpeedDial from './components/FABSpeedDial'
+import { ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -15,11 +17,25 @@ export const metadata: Metadata = {
   description: 'Calculate and manage your structured settlement payments',
 }
 
+// Helper to check for hideNavbar on the child page
+function shouldHideNavbar(children: ReactNode): boolean {
+  // Next.js passes the page as a React element, so we can check its type and props
+  // If the child is a React element and has type with hideNavbar, return true
+  // This is a best-effort check for the App Router
+  // @ts-ignore
+  if (children && children.type && children.type.hideNavbar) {
+    // @ts-ignore
+    return children.type.hideNavbar === true;
+  }
+  return false;
+}
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const hideNavbar = shouldHideNavbar(children);
   return (
     <html lang="en">
       <head>
@@ -48,7 +64,8 @@ export default function RootLayout({
         <meta name="twitter:image" content="/assets/images/og-image.png" />
       </head>
       <body className={inter.className}>
-        <Navbar />
+        {/* Only render Navbar if not hidden by page config */}
+        {!hideNavbar && <Navbar />}
         <main className="main-content" style={{ width: '100vw', maxWidth: '100vw', margin: 0, padding: 0 }}>
           {children}
         </main>

@@ -36,7 +36,7 @@ export default function Articles() {
           {/* BLOG CARD 1 */}
           <div className="col">
             <article className="card h-100 border-0 shadow-sm blog-article-enhanced hover-shadow">
-              <img src="/assets/images/court1.jpg" className="card-img-top" alt="Courtroom with judge - Structured Settlements Explained" loading="lazy" />
+              <img src="/assets/images/court1.jpg" className="card-img-top" alt="Courtroom with judge - Structured Settlements Explained" loading="lazy" style={{ width: '100%', height: '220px', objectFit: 'contain', background: '#fff' }} />
               <div className="card-body">
                 <h5 className="card-title">Structured Settlements <span className="badge bg-success ms-2">Featured</span></h5>
                 <p className="card-text">Understand how structured settlements work, their benefits, and key decisions before cashing out.</p>
@@ -47,7 +47,7 @@ export default function Articles() {
           {/* BLOG CARD 2 */}
           <div className="col">
             <article className="card h-100 border-0 shadow-sm blog-article-enhanced hover-shadow">
-              <img src="/assets/images/sell.jpg" className="card-img-top" alt="Person considering selling settlement - Should You Sell Your Settlement?" loading="lazy" />
+              <img src="/assets/images/sell.jpg" className="card-img-top" alt="Person considering selling settlement - Should You Sell Your Settlement?" loading="lazy" style={{ width: '100%', height: '220px', objectFit: 'contain', background: '#fff' }} />
               <div className="card-body">
                 <h5 className="card-title">Should You Sell Your Structured Settlement?</h5>
                 <p className="card-text">Explore when it's smart to sell your payments and what you should watch out for in the process.</p>
@@ -58,7 +58,7 @@ export default function Articles() {
           {/* BLOG CARD 3 */}
           <div className="col">
             <article className="card h-100 border-0 shadow-sm blog-article-enhanced hover-shadow">
-              <img src="/assets/images/online.jpg" className="card-img-top" alt="Laptop showing online payout - How Fast Is a Settlement Payout?" loading="lazy" />
+              <img src="/assets/images/online.jpg" className="card-img-top" alt="Laptop showing online payout - How Fast Is a Settlement Payout?" loading="lazy" style={{ width: '100%', height: '220px', objectFit: 'contain', background: '#fff' }} />
               <div className="card-body">
                 <h5 className="card-title">How Fast Is a Settlement Payout?</h5>
                 <p className="card-text">Learn how long it typically takes to receive your payout and how SmarterPayouts speeds up the process.</p>

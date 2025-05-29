@@ -183,7 +183,42 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
               placeholder="(555) 555-1234"
               value={phoneDigits}
               onChange={e => {
-                setPhoneDigits(e.target.value);
+                // Remove all non-digit characters
+                const raw = e.target.value.replace(/\D/g, '');
+                // Limit to 10 digits
+                const limited = raw.slice(0, 10);
+                // Format as (XXX) XXX-XXXX
+                let formatted = '';
+                if (limited.length > 0) {
+                  formatted = '(' + limited.slice(0, 3);
+                }
+                if (limited.length >= 4) {
+                  formatted += ') ' + limited.slice(3, 6);
+                } else if (limited.length > 3) {
+                  formatted += ') ' + limited.slice(3);
+                }
+                if (limited.length >= 7) {
+                  formatted += '-' + limited.slice(6, 10);
+                }
+                setPhoneDigits(formatted);
+                setInputError(null);
+              }}
+              onPaste={e => {
+                e.preventDefault();
+                const pasted = e.clipboardData.getData('Text').replace(/\D/g, '').slice(0, 10);
+                let formatted = '';
+                if (pasted.length > 0) {
+                  formatted = '(' + pasted.slice(0, 3);
+                }
+                if (pasted.length >= 4) {
+                  formatted += ') ' + pasted.slice(3, 6);
+                } else if (pasted.length > 3) {
+                  formatted += ') ' + pasted.slice(3);
+                }
+                if (pasted.length >= 7) {
+                  formatted += '-' + pasted.slice(6, 10);
+                }
+                setPhoneDigits(formatted);
                 setInputError(null);
               }}
               disabled={loading}
@@ -219,15 +254,16 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
             }}>
               <div style={{ marginBottom: '0.25rem' }}>Your offer code is:</div>
               <div style={{ fontFamily: 'monospace', fontWeight: 500, fontSize: '1.13rem', marginBottom: '0.7rem' }}>{generateOfferCode(phoneDigits)}</div>
-              <div style={{ marginBottom: '0.15rem' }}>If you have any questions, call us at</div>
-              <div style={{ fontWeight: 500 }}>
+              <div className="d-flex flex-wrap justify-content-center align-items-center" style={{ marginBottom: '0.15rem', gap: 4, fontSize: '1.07rem', lineHeight: 1.5 }}>
+                If you have any questions, call us at
                 <a
                   href="tel:+19547649750"
                   style={{
                     color: '#222',
                     textDecoration: 'none',
-                    fontWeight: 400,
-                    cursor: 'pointer',
+                    fontWeight: 500,
+                    marginLeft: 6,
+                    whiteSpace: 'nowrap',
                     transition: 'color 0.18s, transform 0.18s',
                   }}
                   onMouseOver={e => {

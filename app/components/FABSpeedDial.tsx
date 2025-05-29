@@ -116,7 +116,7 @@ export default function FABSpeedDial() {
           }}
         >
           <span style={{ fontSize: '20px' }}>📞</span>
-          <span style={{ fontSize: '14px', fontWeight: 500 }}>(954) 764-9750</span>
+          <span style={{ fontSize: '14px', fontWeight: 500 }}>Call Us</span>
         </a>
 
         {/* Email Option */}

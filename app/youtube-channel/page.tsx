@@ -50,7 +50,7 @@ export default function YouTubeChannel() {
               <div className="col" key={idx}>
                 <div className="card h-100 shadow-sm d-flex flex-column justify-content-between">
                   <a href={video.url} target="_blank" rel="noopener noreferrer" tabIndex={0} aria-label={`Watch: ${video.title}`} style={{ textDecoration: 'none' }}>
-                    <img src={video.img} alt={video.alt} className="card-img-top" style={{ width: '100%', height: '220px', objectFit: 'cover', borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem' }} />
+                    <img src={video.img} alt={video.alt} className="card-img-top" style={{ width: '100%', height: '220px', objectFit: 'contain', borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem', background: '#fff' }} />
                   </a>
                   <div className="card-body d-flex flex-column">
                     <h5 className="card-title fw-bold" style={{ fontSize: '1.1rem' }}>{video.title}</h5>
