@@ -1,22 +1,58 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { db } from "../utils/firebase";
+import { db, storage } from "../utils/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { format } from 'date-fns';
 
 export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content:
-        "Hi! I'm Mint, the AI chatbot for Smarter Payouts. How can I assist you today?"
+  // Name greeting logic
+  function getStoredName() {
+    if (typeof window !== 'undefined') {
+      return window.sessionStorage.getItem('mintChat_userName') || window.localStorage.getItem('mintChat_userName') || '';
     }
-  ]);
+    return '';
+  }
+  function setStoredName(name: string) {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem('mintChat_userName', name);
+      window.localStorage.setItem('mintChat_userName', name);
+    }
+  }
+  function hasChattedBefore() {
+    if (typeof window !== 'undefined') {
+      return (
+        window.sessionStorage.getItem('mintChat_hasChattedBefore') === 'true' ||
+        window.localStorage.getItem('mintChat_hasChattedBefore') === 'true'
+      );
+    }
+    return false;
+  }
+  function setChattedBefore() {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem('mintChat_hasChattedBefore', 'true');
+      window.localStorage.setItem('mintChat_hasChattedBefore', 'true');
+    }
+  }
+
+  // Initial greeting state
+  const [userName, setUserName] = useState(getStoredName());
+  const [awaitingName, setAwaitingName] = useState(!getStoredName());
+  const [messages, setMessages] = useState(() => {
+    if (getStoredName()) {
+      return [{ role: 'assistant', content: `Welcome back, ${getStoredName()}! How can I assist you today?` }];
+    }
+    return [{ role: 'assistant', content: `Hi there! I'm Mint, your AI assistant. What's your name, or what can I call you today?` }];
+  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [feedbackGiven, setFeedbackGiven] = useState<{ [key: number]: boolean }>({});
+  const [showUpload, setShowUpload] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [sessionId] = useState(getSessionId() || 'unknown');
 
   const suggestedReplies = [
     "How do structured settlements work?",
@@ -155,6 +191,31 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
+    // Name flow: if awaiting name, handle name logic
+    if (awaitingName) {
+      const name = input.trim();
+      setMessages([...messages, { role: 'user', content: name }]);
+      setInput('');
+      setChattedBefore();
+      // Simple name validation: at least 2 letters, not just emoji/blank
+      if (/^[a-zA-Z][a-zA-Z\s\-']{1,30}$/.test(name)) {
+        setUserName(name);
+        setStoredName(name);
+        setAwaitingName(false);
+        setTimeout(() => {
+          setMessages(msgs => [...msgs, { role: 'assistant', content: `Nice to meet you, ${name}! How can I assist you today?` }]);
+        }, 400);
+      } else {
+        setUserName('');
+        setStoredName('');
+        setAwaitingName(false);
+        setTimeout(() => {
+          setMessages(msgs => [...msgs, { role: 'assistant', content: `No worries! How can I assist you today?` }]);
+        }, 400);
+      }
+      return;
+    }
+    setChattedBefore();
     const newMessages = [...messages, { role: "user", content: input }];
     setMessages(newMessages);
     setInput("");
@@ -162,6 +223,37 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     setTyping(true);
     setPendingMessage(null);
     maybeLogAssociateRequest(input);
+    // Detect trigger for upload
+    const uploadTriggers = [
+      'move forward',
+      'speak with associate',
+      'talk to an associate',
+      'send documents',
+      'upload documents',
+      'proceed',
+      'ready to upload',
+      'send paperwork',
+      'send my docs',
+      'send my documents',
+      'submit documents',
+      'submit paperwork',
+    ];
+    if (
+      !showUpload &&
+      uploadTriggers.some(t => input.toLowerCase().includes(t))
+    ) {
+      setShowUpload(true);
+      setTimeout(() => {
+        setMessages(msgs => [
+          ...msgs,
+          {
+            role: 'assistant',
+            content:
+              "You can securely upload any required documents when you're ready. Just use the button below — supported formats: PDF, JPG, PNG, DOCX."
+          }
+        ]);
+      }, 400);
+    }
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -254,9 +346,75 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
     }
   };
 
+  // File upload handler
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || !files[0]) return;
+    const file = files[0];
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowed.includes(file.type)) {
+      alert('Only PDF, JPG, PNG, and DOCX files are allowed.');
+      return;
+    }
+    setUploading(true);
+    try {
+      const sessionId = getSessionId() || 'unknown';
+      const fileRef = storageRef(storage, `chat_uploads/${sessionId}_${Date.now()}_${file.name}`);
+      await uploadBytes(fileRef, file);
+      const url = await getDownloadURL(fileRef);
+      await addDoc(collection(db, 'chat_uploads'), {
+        sessionId,
+        fileName: file.name,
+        fileUrl: url,
+        timestamp: serverTimestamp(),
+      });
+      setMessages(msgs => [
+        ...msgs,
+        { role: 'assistant', content: "Thank you — we've received your document!" }
+      ]);
+    } catch (err) {
+      alert('Upload failed. Please try again.');
+    } finally {
+      setUploading(false);
+      setShowUpload(false);
+    }
+  }
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading, typing, pendingMessage]);
+
+  // Helper: Format timestamp for transcript
+  function formatTimestamp(date: Date) {
+    return format(date, 'hh:mm a');
+  }
+
+  // Download transcript handler
+  function handleDownloadTranscript() {
+    const now = new Date();
+    const filename = `mint_chat_transcript_${format(now, 'yyyy-MM-dd_HH-mm')}_${sessionId}.txt`;
+    let transcript = '';
+    let lastTime = now;
+    messages.forEach((msg, idx) => {
+      // Try to estimate time for each message (not perfect, but gives context)
+      if (idx === 0) lastTime = now;
+      else lastTime = new Date(lastTime.getTime() + 60000); // +1 min per message
+      const time = formatTimestamp(lastTime);
+      const who = msg.role === 'assistant' ? 'Mint' : 'User';
+      transcript += `[${time}] ${who}: ${msg.content.replace(/\n+/g, ' ')}\n`;
+    });
+    const blob = new Blob([transcript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  }
 
   return (
     <div
@@ -408,6 +566,36 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
                 ))}
               </div>
             )}
+            {showUpload && !uploading && (
+              <div style={{ marginTop: 10, marginLeft: 32 }}>
+                <label htmlFor="chat-upload-input" style={{
+                  background: '#e9f9f1',
+                  color: '#198754',
+                  borderRadius: 8,
+                  padding: '7px 18px',
+                  fontWeight: 600,
+                  fontSize: 15,
+                  cursor: 'pointer',
+                  border: '1.5px solid #09b44d',
+                  boxShadow: '0 1px 4px #09b44d11',
+                  display: 'inline-block',
+                }}>
+                  Upload Documents
+                  <input
+                    id="chat-upload-input"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.docx"
+                    style={{ display: 'none' }}
+                    onChange={handleFileUpload}
+                    tabIndex={0}
+                    aria-label="Upload documents"
+                  />
+                </label>
+              </div>
+            )}
+            {uploading && (
+              <div style={{ marginTop: 10, marginLeft: 32, color: '#198754', fontWeight: 500 }}>Uploading…</div>
+            )}
           </div>
         ))}
         {/* Typing indicator and typing effect */}
@@ -483,6 +671,25 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
       {/* Footer branding */}
       <div style={{ textAlign: 'center', fontSize: 12, color: '#aaa', padding: '6px 0 8px 0', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
         Powered by Smarter Payouts
+      </div>
+      <div style={{ textAlign: 'center', fontSize: 13, color: '#198754', padding: '4px 0 2px 0' }}>
+        <button
+          onClick={handleDownloadTranscript}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#198754',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            fontSize: 13,
+            fontWeight: 500,
+            padding: 0,
+            margin: 0,
+          }}
+          aria-label="Download chat transcript"
+        >
+          Download Chat Transcript
+        </button>
       </div>
       <style>{`
         .mint-cta-block {

@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, RecaptchaVerifier } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // Firebase project configuration using static config values
 const firebaseConfig = {
@@ -19,8 +20,9 @@ const app = initializeApp(firebaseConfig);
 // ✅ Export Firebase services
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 console.log('🔥 Firebase initialized');
 
-export { auth, db, RecaptchaVerifier }; 
+export { auth, db, storage, RecaptchaVerifier }; 
 // Triggering redeploy
