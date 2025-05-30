@@ -19,6 +19,10 @@ export default function Footer() {
             <span role="img" aria-label="Instagram">📸</span>
           </a>
         </div>
+        <div className="mt-3">
+          <a href="/privacy" className="text-white text-decoration-underline me-3" style={{ fontSize: '1rem' }}>Privacy Policy</a>
+          <a href="/terms" className="text-white text-decoration-underline" style={{ fontSize: '1rem' }}>Terms of Service</a>
+        </div>
       </div>
     </footer>
   );

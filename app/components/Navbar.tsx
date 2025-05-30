@@ -109,47 +109,24 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-            {/* Our Process dropdown (existing) */}
-            <li className="nav-item dropdown me-2" style={{ position: 'relative' }}>
-              <span
-                className={`nav-link dropdown-toggle${isInProcessSection ? ' active text-success fw-bold' : ''}`}
-                id="processDropdown"
-                role="button"
-                aria-expanded={dropdownOpen}
-                onClick={() => setDropdownOpen((open) => !open)}
-                style={{ cursor: 'pointer', fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: isInProcessSection ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(isInProcessSection ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}
-              >
-                Our Process
-              </span>
-              <ul className={`dropdown-menu${dropdownOpen ? ' show' : ''}`} aria-labelledby="processDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-a-quote" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>💡</span>Get A Quote</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/review-offer" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📝</span>Review Offer</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/court-approval" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>⚖️</span>Court Approval</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-your-cash" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>💵</span>Get Your Cash</Link></li>
-              </ul>
-            </li>
-            {/* Resources dropdown */}
+            {/* Why Us dropdown (first) */}
             <li className="nav-item dropdown me-2">
               <span
                 className="nav-link dropdown-toggle"
-                id="resourcesDropdown"
+                id="whyUsDropdown"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 style={{ cursor: 'pointer', fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s' }}
               >
-                Resources
+                Why Us
               </span>
-              <ul className="dropdown-menu" aria-labelledby="resourcesDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/articles" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📰</span>Articles</Link></li>
+              <ul className="dropdown-menu" aria-labelledby="whyUsDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
                 <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/testimonials" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>⭐</span>Testimonials</Link></li>
                 <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/credentials" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>🛡️</span>Credentials</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/resources" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📚</span>Settlement Insurance Companies</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/structured-settlement-laws" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>⚖️</span>Structured Settlement Federal Law</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/structured-settlement-laws-by-state" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>🏛️</span>Structured Settlement Laws by State</Link></li>
               </ul>
             </li>
-            {/* Company Info dropdown */}
+            {/* Company Info dropdown (second) */}
             <li className="nav-item dropdown me-2">
               <span
                 className="nav-link dropdown-toggle"
@@ -167,21 +144,44 @@ export default function Navbar() {
                 <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/contact" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>✉️</span>Contact Us</Link></li>
               </ul>
             </li>
-            {/* Legal dropdown */}
+            {/* Resources dropdown (third) */}
             <li className="nav-item dropdown me-2">
               <span
                 className="nav-link dropdown-toggle"
-                id="legalDropdown"
+                id="resourcesDropdown"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
                 style={{ cursor: 'pointer', fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s' }}
               >
-                Legal
+                Resources
               </span>
-              <ul className="dropdown-menu" aria-labelledby="legalDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/privacy" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>🔒</span>Privacy</Link></li>
-                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/terms" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📄</span>Terms</Link></li>
+              <ul className="dropdown-menu" aria-labelledby="resourcesDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/articles" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📰</span>Articles</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/testimonials" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500, display: 'none' }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>⭐</span>Testimonials</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/credentials" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500, display: 'none' }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>🛡️</span>Credentials</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/resources" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📚</span>Settlement Insurance Companies</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/structured-settlement-laws" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>⚖️</span>Structured Settlement Federal Law</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/structured-settlement-laws-by-state" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>🏛️</span>Structured Settlement Laws by State</Link></li>
+              </ul>
+            </li>
+            {/* Our Process dropdown (existing) */}
+            <li className="nav-item dropdown me-2" style={{ position: 'relative' }}>
+              <span
+                className={`nav-link dropdown-toggle${isInProcessSection ? ' active text-success fw-bold' : ''}`}
+                id="processDropdown"
+                role="button"
+                aria-expanded={dropdownOpen}
+                onClick={() => setDropdownOpen((open) => !open)}
+                style={{ cursor: 'pointer', fontSize: '1.09rem', padding: '0.7rem 1.1rem', display: 'flex', alignItems: 'center', fontWeight: isInProcessSection ? 600 : 500, borderRadius: 6, transition: 'background 0.15s, color 0.15s', ...(isInProcessSection ? { color: '#09b44d', background: '#e9f9f1' } : {}) }}
+              >
+                Our Process
+              </span>
+              <ul className={`dropdown-menu${dropdownOpen ? ' show' : ''}`} aria-labelledby="processDropdown" style={{ border: '1.5px solid #09b44d', borderRadius: 12, boxShadow: '0 4px 18px rgba(9,180,77,0.07)', minWidth: 230, marginTop: 6, padding: '0.5rem 0' }}>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-a-quote" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>💡</span>Get A Quote</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/review-offer" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>📝</span>Review Offer</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/court-approval" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>⚖️</span>Court Approval</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/get-your-cash" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>💵</span>Get Your Cash</Link></li>
               </ul>
             </li>
             {/* YouTube Channel (standalone link) */}
