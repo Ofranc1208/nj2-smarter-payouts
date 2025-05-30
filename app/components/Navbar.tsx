@@ -142,6 +142,7 @@ export default function Navbar() {
                 <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/about" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>🏢</span>About Us</Link></li>
                 <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/faqs" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>❓</span>FAQs</Link></li>
                 <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/contact" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>✉️</span>Contact Us</Link></li>
+                <li><Link className="dropdown-item d-flex align-items-center px-3 py-2" href="/social-media" style={{ fontSize: '1.07rem', gap: 10, borderRadius: 6, fontWeight: 500 }} onClick={() => setNavbarCollapsed(true)}><span style={{fontSize: '1.15em'}}>🌐</span>Social Media</Link></li>
               </ul>
             </li>
             {/* Resources dropdown (third) */}
