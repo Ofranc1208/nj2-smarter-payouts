@@ -50,11 +50,22 @@ export default function Home() {
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={url} />
+        <link
+          rel="preload"
+          as="video"
+          href="/assets/videos/promos/counting-cash.mp4"
+          type="video/mp4"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/assets/images/fallback.jpg"
+        />
       </Head>
 
       {/* ✅ HERO SECTION */}
       <section className="hero">
-        <video autoPlay muted loop playsInline preload="metadata" id="bg-video">
+        <video autoPlay muted loop playsInline preload="metadata" id="bg-video" poster="/assets/images/fallback.jpg">
           <source src="/assets/videos/promos/counting-cash.mp4" type="video/mp4" />
           <img src="/assets/images/fallback.jpg" alt="Structured Settlement Video Preview" />
         </video>

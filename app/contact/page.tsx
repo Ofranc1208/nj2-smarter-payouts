@@ -148,30 +148,32 @@ export default function Contact() {
 
             {/* Contact Info + Map */}
             <div className="col-md-5">
-              <div className="p-4 bg-white rounded shadow-sm blog-article-enhanced h-100">
-                <h4 className="fw-bold mb-3">SmarterPayouts</h4>
-                <p className="mb-2 d-flex align-items-center">
-                  <span className="me-2" aria-label="Email" role="img">📧</span>
-                  <strong>Email:</strong> info@smarterpayouts.com
-                </p>
-                <p className="mb-2 d-flex align-items-center">
-                  <span className="me-2" aria-label="Phone" role="img">📞</span>
-                  <strong>Phone:</strong> (954) 764-9750
-                </p>
-                <p className="mb-2 d-flex align-items-center">
-                  <span className="me-2" aria-label="Hours" role="img">⏰</span>
-                  <strong>Hours:</strong> Mon–Fri, 9am – 6pm EST
-                </p>
-                <p className="mb-4 d-flex align-items-start">
-                  <span className="me-2 mt-1" aria-label="Address" role="img">📍</span>
-                  <span>
-                    <strong>Address:</strong>
-                    <br />
-                    433 Plaza Real, Suite 275
-                    <br />
-                    Boca Raton, FL 33432
-                  </span>
-                </p>
+              <div className="p-4 bg-white rounded shadow-sm blog-article-enhanced h-100" style={{ padding: '2rem 1.5rem', minWidth: 0 }}>
+                <h4 className="fw-bold mb-4" style={{ fontSize: '1.25rem', letterSpacing: '-0.5px' }}>SmarterPayouts</h4>
+                <div className="mb-3 d-flex align-items-center" style={{ gap: 12 }}>
+                  <span className="d-flex align-items-center justify-content-center" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Email" role="img">📧</span>
+                  <span style={{ fontWeight: 600, minWidth: 70 }}>Email:</span>
+                  <span style={{ fontWeight: 400, fontSize: '1.04rem', wordBreak: 'break-all' }}>info@smarterpayouts.com</span>
+                </div>
+                <div className="mb-3 d-flex align-items-center" style={{ gap: 12 }}>
+                  <span className="d-flex align-items-center justify-content-center" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Phone" role="img">📞</span>
+                  <span style={{ fontWeight: 600, minWidth: 70 }}>Phone:</span>
+                  <span style={{ fontWeight: 400, fontSize: '1.04rem' }}>(954) 764-9750</span>
+                </div>
+                <div className="mb-3 d-flex align-items-center" style={{ gap: 12 }}>
+                  <span className="d-flex align-items-center justify-content-center" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Hours" role="img">⏰</span>
+                  <span style={{ fontWeight: 600, minWidth: 70 }}>Hours:</span>
+                  <span style={{ fontWeight: 400, fontSize: '1.04rem' }}>Mon–Fri, 9am – 6pm EST</span>
+                </div>
+                <div className="mb-4 d-flex align-items-start" style={{ gap: 12 }}>
+                  <span className="d-flex align-items-center justify-content-center mt-1" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Address" role="img">📍</span>
+                  <div>
+                    <span style={{ fontWeight: 600 }}>Address:</span>
+                    <div style={{ fontWeight: 400, fontSize: '1.04rem', marginTop: 2 }}>
+                      433 Plaza Real, Suite 275<br />Boca Raton, FL 33432
+                    </div>
+                  </div>
+                </div>
                 <iframe
                   className="w-100 rounded shadow-sm"
                   height="200"

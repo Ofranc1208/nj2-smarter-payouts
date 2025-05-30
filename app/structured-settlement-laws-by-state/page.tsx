@@ -1071,20 +1071,32 @@ export default function StructuredSettlementLawsByState() {
         <h1 className="fw-bold text-success mb-4" style={{ fontSize: '2.1rem' }}>Structured Settlement Laws by State</h1>
         <section className="mb-3">
           <h2 className="h4 mb-2">State-Specific Regulations for Structured Settlement Transfers</h2>
-          <p className="text-muted mb-2">Explore structured settlement protection acts, transfer laws, and regulations for every U.S. state and the District of Columbia. Search for your state below.</p>
-        </section>
-        {/* Searchable State Selector */}
-        <section className="mb-2">
+          <p className="text-muted mb-3">View state-specific regulations for structured settlement transfers.<br />Search for your state below to learn more.</p>
           <input
             type="text"
-            className="form-control mb-2"
+            className="form-control mb-4"
             placeholder="Search state..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ maxWidth: 400 }}
+            style={{ maxWidth: 400, border: '2px solid #22b455', boxShadow: 'none' }}
             aria-label="Search for a state"
           />
         </section>
+        <div className="card shadow-sm mb-4 mx-auto" style={{ maxWidth: 540, borderLeft: '5px solid #22b455', background: '#f8fafc' }}>
+          <div className="card-body text-center">
+            <p className="mb-3" style={{ fontSize: '1.08rem' }}>
+              We comply with all state regulations and court-approved processes for structured settlement transfers.<br />
+              Questions or want a free quote? We're here to help.
+            </p>
+            <a
+              href="tel:+19547649750"
+              className="btn btn-success btn-lg fw-semibold"
+              style={{ borderRadius: 8, fontSize: '1.13rem', padding: '0.7rem 2.2rem' }}
+            >
+              Call Now for Assistance
+            </a>
+          </div>
+        </div>
         <section>
           {Object.keys(grouped).sort().map(letter => (
             <div key={letter} className="mb-4">

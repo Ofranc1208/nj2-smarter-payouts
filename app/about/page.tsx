@@ -57,12 +57,20 @@ export default function About() {
           <div className="row justify-content-center text-center g-4">
             <div className="col-md-10 col-lg-8">
              
-              <p className="lead text-center mb-4" style={{ color: '#198754', fontWeight: 600 }}>
-              A modern settlement company giving you instant quotes and a fully digital, no-pressure experience—no calls, no hidden fees
+              <p className="lead text-center mb-4" style={{ color: '#198754', fontWeight: 700 }}>
+                SmarterPayouts is a Florida-based structured settlement company, serving clients nationwide since 2017. We are officially registered on SunBiz and listed with the Better Business Bureau (BBB) to promote transparency and accountability.
               </p>
-              <p className="mb-4">
-                We're the <strong>first in the industry</strong> with a <strong>Online Payout calculator</strong> offering real quotes instantly, no strings attached.
-              </p>
+              <div className="text-start" style={{ maxWidth: 700, margin: '0 auto' }}>
+                <p className="mb-3">
+                  As a digital-first, Florida-based structured settlement company, we make structured settlement transfers simple, transparent, and fully online. Our mission is to empower clients with instant quotes, clear pricing, and a no-pressure, client-first experience—whether you need a structured settlement cash out or want to compare options.
+                </p>
+                <p className="mb-3">
+                  We believe in transparent, court-approved structured settlement transfers and ethical, compliant business practices. Our team is dedicated to helping you make informed financial decisions, with no hidden fees or sales pressure.
+                </p>
+                <p className="mb-0">
+                  You can verify our registration on SunBiz or review our BBB profile at any time. Discover why clients trust SmarterPayouts for structured settlement quotes and cash outs in Florida and nationwide.
+                </p>
+              </div>
             </div>
           </div>
           <div className="row row-cols-1 row-cols-sm-2 g-4 mt-4">

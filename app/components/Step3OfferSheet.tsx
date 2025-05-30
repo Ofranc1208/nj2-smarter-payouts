@@ -281,23 +281,30 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
             </div>
             <button
               type="submit"
-              disabled={loading || phoneDigits.length < 7}
-              style={{
-                width: '100%',
-                margin: '1rem 0 0 0',
-                padding: '0.75rem',
-                fontSize: '1.1rem',
-                borderRadius: '6px',
-                fontWeight: 600,
-                background: '#22b455',
-                color: 'white',
-                border: 'none',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                boxShadow: '0 2px 8px rgba(34,180,85,0.08)'
+              className="btn btn-success w-100"
+              style={{ fontSize: '1.15rem', fontWeight: 600, padding: '0.7rem 0', borderRadius: 8 }}
+              disabled={loading}
+            >
+              {loading ? 'Unlocking...' : 'Unlock Offer'}
+            </button>
+            {/* New button for checking state laws */}
+            <button
+              type="button"
+              className="btn btn-outline-primary w-100 mt-2"
+              style={{ fontSize: '1.08rem', fontWeight: 500, padding: '0.6rem 0', borderRadius: 8 }}
+              disabled={loading}
+              onClick={() => {
+                router.push('/structured-settlement-laws-by-state');
               }}
             >
-              {loading ? 'Submitting...' : 'Unlock Offer'}
+              Check State Approval
             </button>
+            {/* Friendly message if no state selected */}
+            {!formData?.state && (
+              <div className="text-danger mt-2" style={{ fontSize: '0.98rem' }}>
+                Please select your state to check its laws.
+              </div>
+            )}
           </form>
         </div>
       )}

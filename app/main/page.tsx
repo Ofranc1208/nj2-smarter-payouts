@@ -2,12 +2,11 @@ import HeroSection from '../components/HeroSection';
 import ProcessSteps from '../components/ProcessSteps';
 import InternalLinks from '../components/InternalLinks';
 import ValueProps from '../components/ValueProps';
-import MiniFAQ from '../components/MiniFAQ';
 import Stats from '../components/Stats';
-import Testimonials from '../components/Testimonials';
 import CallToAction from '../components/CallToAction';
 import FABSpeedDial from '../components/FABSpeedDial';
 import Footer from '../components/Footer';
+import MainClientContent from './MainClientContent';
 
 export default function Main() {
   return (
@@ -16,12 +15,9 @@ export default function Main() {
       <ProcessSteps />
       <InternalLinks />
       <ValueProps />
-      <MiniFAQ />
-      <Stats />
-      <Testimonials />
+      <MainClientContent />
       <CallToAction />
       <FABSpeedDial />
-     
     </>
   );
 } 

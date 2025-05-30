@@ -36,6 +36,16 @@ export default function Navbar() {
     'about': '/about',
     'privacy': '/privacy',
     'terms': '/terms',
+    'calculator': '/pricing-calculator',
+    'structured settlement': '/main',
+    'main': '/main',
+    'home': '/main',
+    'offer': '/review-offer',
+    'court': '/court-approval',
+    'cash': '/get-your-cash',
+    'blog': '/blog',
+    'articles': '/articles',
+    'youtube': '/youtube-channel',
   };
 
   function handleSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -47,7 +57,10 @@ export default function Navbar() {
       setSearchValue('');
       setNavbarCollapsed(true);
     } else if (keyword) {
-      alert('No results found.');
+      // Redirect to helpful links page instead of alert
+      router.push('/helpful-links');
+      setSearchValue('');
+      setNavbarCollapsed(true);
     }
   }
 
