@@ -5,19 +5,19 @@ export default function GetAQuote() {
   return (
     <>
       <Head>
-        <title>Get a Quote | SmarterPayouts - Structured Settlement Experts</title>
+        <title>Instant Quotes for Structured Settlements | SmarterPayouts</title>
         <meta
           name="description"
-          content="Get a fast, no-obligation cash quote for your structured settlement. Use our online calculator or talk to a real expert—no personal info required!"
+          content="Get an instant, no-obligation quote for your structured settlement. Use our online calculator or talk to an expert—no personal info required. Fast, private, and secure."
         />
         <meta
           name="keywords"
-          content="structured settlement, get a quote, cash offer, online calculator, no personal info, instant quote, payout"
+          content="instant quote, structured settlement, online calculator, no personal info, fast payout, cash offer, SmarterPayouts"
         />
-        <meta property="og:title" content="Get a Quote | SmarterPayouts" />
+        <meta property="og:title" content="Instant Quotes for Structured Settlements | SmarterPayouts" />
         <meta
           property="og:description"
-          content="Get a fast, no-obligation cash quote for your structured settlement. Use our online calculator or talk to a real expert—no personal info required!"
+          content="Get an instant, no-obligation quote for your structured settlement. Use our online calculator or talk to an expert—no personal info required. Fast, private, and secure."
         />
         <meta property="og:type" content="website" />
       </Head>
@@ -30,10 +30,10 @@ export default function GetAQuote() {
       }}>
         <div className="text-center w-100">
           <h1 className="fw-bold mb-2 text-success" style={{ fontSize: "2.2rem", letterSpacing: "-1px" }}>
-            Get Your Free, No-Obligation Quote
+            Instant Quotes for Structured Settlements
           </h1>
           <div className="text-muted mb-2" style={{ fontSize: "1.1rem" }}>
-            SmarterPayouts makes it easy to see your options—no personal info, no pressure, just answers.
+            Get a free, no-obligation cash offer in seconds. No personal information, no pressure, just answers.
           </div>
           <Link href="/pricing-calculator" className="btn btn-success btn-lg mt-2">
             Get Your Instant Offer
@@ -46,6 +46,7 @@ export default function GetAQuote() {
       {/* OPTIONS SECTION */}
       <section className="py-5 bg-light">
         <div className="container">
+          <h2 className="fw-bold text-center mb-4">How Our Instant Quote Process Works</h2>
           <div className="row g-4">
             {/* Option 1: Online Calculator */}
             <div className="col-md-6">
@@ -69,7 +70,7 @@ export default function GetAQuote() {
                   <h5 className="text-success fw-bold mb-3">Option 1: Online Calculator</h5>
                   <p className="fw-bold mb-1">Fast, Private, and Secure</p>
                   <p className="text-muted">
-                    Enter basic payment details—no personal info or credit check required. See your potential cash offer in seconds.
+                    Enter your payment details—no personal info or credit check required. See your cash offer instantly, 24/7.
                   </p>
                   <div className="text-end mt-3">
                     <span className="badge bg-success bg-opacity-10 text-success fw-semibold">
@@ -99,13 +100,10 @@ export default function GetAQuote() {
                   >
                     📞
                   </div>
-                  <h5 className="text-success fw-bold mb-3">Option 2: Talk to Us</h5>
-                  <p className="fw-bold mb-1">Speak with a Real Expert</p>
+                  <h5 className="text-success fw-bold mb-3">Option 2: Talk to an Expert</h5>
+                  <p className="fw-bold mb-1">Speak with a Real Person</p>
                   <p className="text-muted">
-                    Chat or call our client relations representative for a quote—no personal information needed.
-                  </p>
-                  <p className="text-muted">
-                    If your payments are life contingent, we'll ask a few quick health questions.
+                    Call or chat with our client relations team for a fast quote—no personal information needed. We never pressure you to sell.
                   </p>
                   <div className="text-end mt-3">
                     <span className="badge bg-success bg-opacity-10 text-success fw-semibold">
@@ -125,7 +123,7 @@ export default function GetAQuote() {
       {/* FAQ SECTION */}
       <section className="container mb-5">
         <div className="blog-article-enhanced p-4 bg-white rounded shadow-sm">
-          <h2 className="fw-bold text-success mb-3">Quote FAQ</h2>
+          <h2 className="fw-bold text-success mb-3">Instant Quote FAQ</h2>
           <div>
             <details className="mb-3">
               <summary className="fw-bold">Do I need to provide personal information?</summary>

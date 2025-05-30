@@ -5,19 +5,19 @@ export default function CourtApproval() {
   return (
     <>
       <Head>
-        <title>Court Approval Process | SmarterPayouts - Structured Settlement Experts</title>
+        <title>Court Approved Structured Settlements | SmarterPayouts</title>
         <meta
           name="description"
-          content="Learn how the structured settlement court approval process works. SmarterPayouts guides you through every step, ensuring compliance, security, and peace of mind."
+          content="Learn how the court approval process works for structured settlements. SmarterPayouts guides you through every step—compliant, secure, and stress-free."
         />
         <meta
           name="keywords"
-          content="structured settlement, court approval, legal process, judge, hearing, payout, compliance"
+          content="court approved, structured settlement, legal process, judge, compliance, payout, SmarterPayouts"
         />
-        <meta property="og:title" content="Court Approval Process | SmarterPayouts" />
+        <meta property="og:title" content="Court Approved Structured Settlements | SmarterPayouts" />
         <meta
           property="og:description"
-          content="Learn how the structured settlement court approval process works. SmarterPayouts guides you through every step, ensuring compliance, security, and peace of mind."
+          content="Learn how the court approval process works for structured settlements. SmarterPayouts guides you through every step—compliant, secure, and stress-free."
         />
         <meta property="og:type" content="website" />
       </Head>
@@ -29,10 +29,10 @@ export default function CourtApproval() {
       }}>
         <div className="text-center w-100">
           <h1 className="fw-bold mb-2 text-success" style={{ fontSize: "2.2rem", letterSpacing: "-1px" }}>
-            How the Structured Settlement Court Approval Process Works
+            Court Approved Structured Settlements
           </h1>
           <div className="text-muted mb-2" style={{ fontSize: "1.1rem" }}>
-            We make the court approval process simple, transparent, and stress-free. Our team guides you every step of the way.
+            Every transaction is reviewed and approved by a judge. We make the process simple, transparent, and fully compliant.
           </div>
           <Link href="/pricing-calculator" className="btn btn-success btn-lg mt-2">
             Get Your Instant Offer
@@ -42,6 +42,7 @@ export default function CourtApproval() {
       <div className="section-divider"></div>
       <section className="py-5 bg-light">
         <div className="container">
+          <h2 className="fw-bold text-center mb-4">How the Court Approval Process Works</h2>
           <div className="row g-4 text-center">
             {/* Step 1 */}
             <div className="col-md-3 col-sm-6">

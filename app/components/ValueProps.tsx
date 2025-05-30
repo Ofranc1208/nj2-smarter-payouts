@@ -26,10 +26,10 @@ const ValueProps: React.FC = () => (
   <section className="py-5 bg-light">
     <div className="container">
       <div className="row g-4 justify-content-center text-center">
-        <ValueItem emoji="⚡" title="Instant Quotes" text="Skip the wait. Skip the phone tag." link="/getaquote" />
-        <ValueItem emoji="🔒" title="100% Private" text="No personal information required." link="/reviewoffer" />
-        <ValueItem emoji="⚖️" title="Court Approved" text="A judge approves the offer." link="/courtapproval" />
-        <ValueItem emoji="📱" title="Mobile Friendly" text="Available 24/7 on any device." link="/pricingcalculator" />
+        <ValueItem emoji="⚡" title="Instant Quotes" text="Skip the wait. Skip the phone tag." link="/get-a-quote" />
+        <ValueItem emoji="🔒" title="100% Private" text="No personal information required." link="/review-offer" />
+        <ValueItem emoji="⚖️" title="Court Approved" text="A judge approves the offer." link="/court-approval" />
+        <ValueItem emoji="📱" title="Mobile Friendly" text="Available 24/7 on any device." link="/pricing-calculator" />
       </div>
     </div>
   </section>

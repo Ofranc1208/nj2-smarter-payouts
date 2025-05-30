@@ -8,9 +8,9 @@ export default function ReviewOffer() {
   return (
     <>
       <Head>
-        <title>Review & Finalize Your Offer | SmarterPayouts</title>
-        <meta name="description" content="Review and finalize your structured settlement offer with SmarterPayouts. Secure, digital, and fully compliant process—step by step." />
-        <meta name="keywords" content="structured settlement, review offer, finalize, digital signing, compliance, secure" />
+        <title>100% Private & Secure | SmarterPayouts Structured Settlements</title>
+        <meta name="description" content="Your privacy is our priority. Get a quote for your structured settlement with no personal information required. 100% secure, confidential, and digital process." />
+        <meta name="keywords" content="privacy, no personal info, secure, confidential, digital process, structured settlement, SmarterPayouts" />
       </Head>
       {/* HERO SECTION */}
       <section className="how-fast-hero p-4 rounded mb-4 d-flex align-items-center justify-content-center" style={{
@@ -20,10 +20,10 @@ export default function ReviewOffer() {
       }}>
         <div className="text-center w-100">
           <h1 className="fw-bold mb-2 text-success" style={{ fontSize: "2.2rem", letterSpacing: "-1px" }}>
-            Review & Finalize Your Offer
+            100% Private & Secure
           </h1>
           <div className="text-muted mb-2" style={{ fontSize: "1.1rem" }}>
-            We guide you through every step—securely, digitally, and with full compliance for your state.
+            Get a quote without sharing personal information. Our process is fully digital, confidential, and secure.
           </div>
           <Link href="/pricing-calculator" className="btn btn-success btn-lg mt-2">
             Get Your Instant Offer
@@ -33,41 +33,42 @@ export default function ReviewOffer() {
       <div className="section-divider"></div>
       <section className="py-5 bg-light">
         <div className="container">
+          <h2 className="fw-bold text-center mb-4">How We Protect Your Privacy</h2>
           <div className="row g-4 text-center">
             {/* Step 1 */}
             <div className="col-md-3 col-sm-6">
               <div className="card-steps h-100 p-4 rounded shadow-sm blog-article-enhanced bg-white d-flex flex-column justify-content-between">
-                <div style={{ fontSize: '2rem', color: '#4caf50' }} role="img" aria-label="Disclosures">📄</div>
+                <div style={{ fontSize: '2rem', color: '#4caf50' }} role="img" aria-label="No Personal Info">🔒</div>
                 <div className="step-number badge bg-success mb-2" style={{ fontSize: '1rem' }}>Step 1</div>
-                <h5 className="mt-2">Receive Disclosures</h5>
-                <p>We'll send your state-specific disclosure forms to review — each state has different rules.</p>
+                <h5 className="mt-2">No Personal Info Needed</h5>
+                <p>Get your quote instantly—no SSN, no credit check, no sensitive data required.</p>
               </div>
             </div>
             {/* Step 2 */}
             <div className="col-md-3 col-sm-6">
               <div className="card-steps h-100 p-4 rounded shadow-sm blog-article-enhanced bg-white d-flex flex-column justify-content-between">
-                <div style={{ fontSize: '2rem', color: '#2196f3' }} role="img" aria-label="DocuSign">🖊️</div>
+                <div style={{ fontSize: '2rem', color: '#2196f3' }} role="img" aria-label="Digital Security">💻</div>
                 <div className="step-number badge bg-primary mb-2" style={{ fontSize: '1rem' }}>Step 2</div>
-                <h5 className="mt-2">Sign via DocuSign</h5>
-                <p>After reviewing, sign your documents using DocuSign — secure and fully digital.</p>
+                <h5 className="mt-2">100% Digital & Secure</h5>
+                <p>All quotes and documents are handled securely online. Your privacy is protected at every step.</p>
               </div>
             </div>
             {/* Step 3 */}
             <div className="col-md-3 col-sm-6">
               <div className="card-steps h-100 p-4 rounded shadow-sm blog-article-enhanced bg-white d-flex flex-column justify-content-between">
-                <div style={{ fontSize: '2rem', color: '#ff9800' }} role="img" aria-label="Final Contract">📑</div>
+                <div style={{ fontSize: '2rem', color: '#ff9800' }} role="img" aria-label="Confidential">🤫</div>
                 <div className="step-number badge bg-warning text-dark mb-2" style={{ fontSize: '1rem' }}>Step 3</div>
-                <h5 className="mt-2">Final Contract</h5>
-                <p>We prepare your final contract. Some states (like California) require a 3–10 day wait before this step.</p>
+                <h5 className="mt-2">Confidential & Compliant</h5>
+                <p>We never sell or rent your information. All processes are state and federally compliant.</p>
               </div>
             </div>
             {/* Step 4 */}
             <div className="col-md-3 col-sm-6">
               <div className="card-steps h-100 p-4 rounded shadow-sm blog-article-enhanced bg-white d-flex flex-column justify-content-between">
-                <div style={{ fontSize: '2rem', color: '#9c27b0' }} role="img" aria-label="Notarization">🧾</div>
+                <div style={{ fontSize: '2rem', color: '#9c27b0' }} role="img" aria-label="You Stay in Control">🧑‍💻</div>
                 <div className="step-number badge text-white mb-2" style={{ fontSize: '1rem', backgroundColor: '#9c27b0' }}>Step 4</div>
-                <h5 className="mt-2">Notarization</h5>
-                <p>We'll schedule a licensed notary to complete the paperwork — online or in person at your convenience.</p>
+                <h5 className="mt-2">You Stay in Control</h5>
+                <p>Only you decide what to share. We're here to help, not to pressure or collect unnecessary data.</p>
               </div>
             </div>
           </div>
@@ -107,7 +108,7 @@ export default function ReviewOffer() {
           <div className="section-divider"></div>
           {/* FAQ SECTION */}
           <div className="blog-article-enhanced p-4 bg-white rounded shadow-sm mt-5">
-            <h2 className="fw-bold text-success mb-3">Review Offer FAQ</h2>
+            <h2 className="fw-bold text-success mb-3">Privacy & Security FAQ</h2>
             <details className="mb-3">
               <summary className="fw-bold">Is the review process secure?</summary>
               <div className="mt-2 text-muted">Yes. All documents are handled securely and digitally, with full compliance for your state.</div>

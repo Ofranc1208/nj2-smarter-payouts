@@ -13,7 +13,10 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [feedbackGiven, setFeedbackGiven] = useState<{ [key: number]: boolean }>({});
 
   const suggestedReplies = [
     "How do structured settlements work?",
@@ -79,13 +82,85 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     }
   }
 
+  // Helper: Split Mint's response into paragraphs (2-3 max for long answers)
+  function splitIntoParagraphs(text: string): string[] {
+    // Prefer double newlines, fallback to splitting on sentences
+    if (text.includes("\n\n")) {
+      return text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+    }
+    // Otherwise, split into sentences and group into paragraphs
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    const paragraphs: string[] = [];
+    let current = "";
+    for (let i = 0; i < sentences.length; i++) {
+      current += sentences[i].trim() + " ";
+      if ((i + 1) % 2 === 0 || i === sentences.length - 1) {
+        paragraphs.push(current.trim());
+        current = "";
+      }
+    }
+    return paragraphs;
+  }
+
+  // Helper: Render Mint's paragraphs with enhancements
+  function renderAssistantParagraphs(paragraphs: string[]) {
+    return paragraphs.map((p, idx) => {
+      // Phone number clickable
+      const phoneRegex = /\(954\) 764-9750/g;
+      let enhanced = p.replace(phoneRegex, '<a href="tel:+19547649750">(954) 764-9750</a>');
+      // Render as HTML for phone link
+      return <span key={idx} style={{ display: 'block', marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: enhanced }} />;
+    });
+  }
+
+  // Helper: Should we append the calculator CTA?
+  function shouldAppendCalculatorCTA(paragraphs: string[]) {
+    // Only for assistant replies, not for errors or very short/closing messages
+    const alreadyHasCTA = paragraphs.some(p => p.toLowerCase().includes('online calculator'));
+    return !alreadyHasCTA && paragraphs.length > 0 && !/error|sorry|not found|unknown/i.test(paragraphs.join(' '));
+  }
+
+  const CALCULATOR_CTA =
+    `<div class="mint-cta-block">
+      <div class="mint-cta-header">Want to see your payout estimate?</div>
+      <div class="mint-cta-body">Try our industry-first <a href="/pricing-calculator" class="mint-cta-link" target="_blank" rel="noopener noreferrer">online calculator</a> — no personal info required, and it could save you thousands!</div>
+    </div>`;
+
+  // Typing effect for Mint's response
+  function typeMessage(paragraphs: string[], onDone: (full: string) => void) {
+    let full = "";
+    let pIdx = 0;
+    let cIdx = 0;
+    function typeNext() {
+      if (pIdx >= paragraphs.length) {
+        onDone(full.trim());
+        return;
+      }
+      const para = paragraphs[pIdx];
+      if (cIdx < para.length) {
+        full += para[cIdx];
+        setPendingMessage(full + "|"); // Show a cursor
+        cIdx++;
+        setTimeout(typeNext, 10 + Math.random() * 30); // Typing speed
+      } else {
+        full += "\n\n";
+        setPendingMessage(full);
+        pIdx++;
+        cIdx = 0;
+        setTimeout(typeNext, 250); // Pause between paragraphs
+      }
+    }
+    typeNext();
+  }
+
   const sendMessage = async () => {
     if (!input.trim()) return;
     const newMessages = [...messages, { role: "user", content: input }];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
-    // Log associate request if relevant
+    setTyping(true);
+    setPendingMessage(null);
     maybeLogAssociateRequest(input);
     try {
       const res = await fetch("/api/chat", {
@@ -159,9 +234,20 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
       });
       const data = await res.json();
       const aiMessage = data.choices?.[0]?.message?.content || "Sorry, I couldn't get a response.";
-      setMessages([...newMessages, { role: "assistant", content: aiMessage }]);
+      // Simulate 'Mint is typing...' for 1–2 seconds
+      setTimeout(() => {
+        // Then type out the message
+        const paragraphs = splitIntoParagraphs(aiMessage);
+        typeMessage(paragraphs, (full) => {
+          setMessages([...newMessages, { role: "assistant", content: full.replace(/\|$/, "") }]);
+          setTyping(false);
+          setPendingMessage(null);
+        });
+      }, 1000 + Math.random() * 800);
     } catch (err) {
       setMessages([...newMessages, { role: "assistant", content: "Sorry, there was an error." }]);
+      setTyping(false);
+      setPendingMessage(null);
     } finally {
       setLoading(false);
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
@@ -169,9 +255,8 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
   };
 
   useEffect(() => {
-    // Auto-scroll to the latest message
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, loading, typing, pendingMessage]);
 
   return (
     <div
@@ -193,9 +278,12 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
         // Responsive width for mobile
         ...(typeof window !== 'undefined' && window.innerWidth < 600 ? { width: '90vw' } : {})
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="SmarterPayouts Chatbot"
     >
       <div style={{ position: 'relative', background: "#09b44d", color: "#fff", padding: "12px 18px", fontWeight: 600, fontSize: 18 }}>
-        💬 Chat with Us
+        <span id="chat-header" tabIndex={0} aria-label="Chat with Us">💬 Chat with Us</span>
         {onClose && (
           <button
             onClick={onClose}
@@ -215,15 +303,26 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
               alignItems: 'center',
               gap: 4
             }}
+            tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { onClose(); } }}
           >
             <span style={{fontSize: 20, marginRight: 4}}>×</span> Close
           </button>
         )}
       </div>
-      <div style={{ flex: 1, padding: 16, height: 440, overflowY: "auto", background: "#f8f9fa" }}>
+      <div
+        style={{ flex: 1, padding: 16, height: 440, overflowY: "auto", background: "#f8f9fa" }}
+        aria-live="polite"
+        aria-atomic="false"
+        aria-relevant="additions text"
+        tabIndex={0}
+      >
         {messages.map((msg, i) => (
-          <div key={i} style={{ marginBottom: 10, textAlign: msg.role === "user" ? "right" : "left" }}>
-            <span style={{
+          <div key={i} style={{ marginBottom: 10, textAlign: msg.role === "user" ? "right" : "left", display: 'block' }}>
+            {msg.role === "assistant" && (
+              <span className="mint-avatar">M</span>
+            )}
+            <span className={i === messages.length - 1 ? "chat-bubble-animate" : ""} style={{
               display: "inline-block",
               background: msg.role === "user" ? "#e9f9f1" : "#fff",
               color: "#222",
@@ -231,8 +330,43 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
               padding: "8px 14px",
               maxWidth: "80%",
               fontSize: 15,
-              boxShadow: msg.role === "user" ? "0 1px 4px #09b44d22" : "0 1px 4px #0001"
-            }}>{msg.content}</span>
+              boxShadow: msg.role === "user" ? "0 1px 4px #09b44d22" : "0 1px 4px #0001",
+              verticalAlign: 'middle'
+            }}>{msg.role === "assistant"
+              ? <>{
+                  (() => {
+                    const paragraphs = splitIntoParagraphs(msg.content);
+                    return <>
+                      {renderAssistantParagraphs(paragraphs)}
+                      {shouldAppendCalculatorCTA(paragraphs) && <span style={{ display: 'block', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: CALCULATOR_CTA }} />}
+                    </>;
+                  })()
+                }</>
+              : msg.content}
+            </span>
+            {/* Feedback buttons for Mint replies except the initial greeting */}
+            {msg.role === "assistant" && i !== 0 && !feedbackGiven[i] && (
+              <div style={{ marginTop: 6, marginLeft: 32, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
+                <span style={{ color: '#888', marginRight: 4 }}>Was this helpful?</span>
+                <button
+                  aria-label="Helpful"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#09b44d', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
+                  onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
+                  onMouseOver={e => (e.currentTarget.style.color = '#0d6b3c')}
+                  onMouseOut={e => (e.currentTarget.style.color = '#09b44d')}
+                >👍</button>
+                <button
+                  aria-label="Not helpful"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
+                  onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
+                  onMouseOver={e => (e.currentTarget.style.color = '#b00020')}
+                  onMouseOut={e => (e.currentTarget.style.color = '#888')}
+                >👎</button>
+              </div>
+            )}
+            {msg.role === "assistant" && i !== 0 && feedbackGiven[i] && (
+              <div style={{ marginTop: 6, marginLeft: 32, color: '#198754', fontSize: 13.5, fontWeight: 500 }}>Thank you for your feedback!</div>
+            )}
             {/* Show pill buttons only after the initial assistant message and only for the first message */}
             {i === 0 && msg.role === "assistant" && (
               <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -253,7 +387,13 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
                       cursor: 'pointer',
                       boxShadow: '0 1px 4px #09b44d11',
                       transition: 'background 0.15s, color 0.15s',
+                      outline: 'none',
                     }}
+                    tabIndex={0}
+                    aria-label={reply}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setInput(reply); } }}
+                    onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 2px #09b44d55'; }}
+                    onBlur={e => { e.currentTarget.style.boxShadow = '0 1px 4px #09b44d11'; }}
                     onMouseOver={e => {
                       e.currentTarget.style.background = '#d1f7e6';
                       e.currentTarget.style.color = '#0d6b3c';
@@ -270,9 +410,10 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
             )}
           </div>
         ))}
-        {/* Typing indicator */}
-        {loading && (
-          <div style={{ marginBottom: 10, textAlign: 'left' }}>
+        {/* Typing indicator and typing effect */}
+        {typing && (
+          <div style={{ marginBottom: 10, textAlign: 'left', display: 'block' }}>
+            <span className="mint-avatar">M</span>
             <span style={{
               display: 'inline-block',
               background: '#fff',
@@ -282,9 +423,35 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
               fontSize: 15,
               fontStyle: 'italic',
               boxShadow: '0 1px 4px #09b44d11',
-              maxWidth: '80%'
+              maxWidth: '80%',
+              verticalAlign: 'middle'
             }}>
               Mint is typing...
+            </span>
+          </div>
+        )}
+        {pendingMessage && (
+          <div style={{ marginBottom: 10, textAlign: 'left', display: 'block' }}>
+            <span className="mint-avatar">M</span>
+            <span className="chat-bubble-animate" style={{
+              display: 'inline-block',
+              background: '#fff',
+              color: '#222',
+              borderRadius: 12,
+              padding: '8px 14px',
+              maxWidth: '80%',
+              fontSize: 15,
+              boxShadow: '0 1px 4px #0001',
+              whiteSpace: 'pre-line',
+              verticalAlign: 'middle'
+            }}>
+              {(() => {
+                const paragraphs = splitIntoParagraphs(pendingMessage.replace(/\|$/, ''));
+                return <>
+                  {renderAssistantParagraphs(paragraphs)}
+                  {shouldAppendCalculatorCTA(paragraphs) && <span style={{ display: 'block', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: CALCULATOR_CTA }} />}
+                </>;
+              })()}
             </span>
           </div>
         )}
@@ -299,11 +466,16 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
           placeholder="Type your message..."
           style={{ flex: 1, border: "none", outline: "none", fontSize: 15, padding: 8, background: "#f8f9fa", borderRadius: 8 }}
           disabled={loading}
+          aria-label="Type your message"
+          tabIndex={0}
         />
         <button
           onClick={sendMessage}
           disabled={loading || !input.trim()}
           style={{ marginLeft: 8, background: "#09b44d", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontWeight: 600, fontSize: 15, cursor: loading ? "not-allowed" : "pointer" }}
+          aria-label="Send message"
+          tabIndex={0}
+          onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !loading && input.trim()) { sendMessage(); } }}
         >
           {loading ? "..." : "Send"}
         </button>
@@ -312,6 +484,79 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
       <div style={{ textAlign: 'center', fontSize: 12, color: '#aaa', padding: '6px 0 8px 0', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
         Powered by Smarter Payouts
       </div>
+      <style>{`
+        .mint-cta-block {
+          background: #f6faf7;
+          border-radius: 12px;
+          padding: 14px 16px 12px 16px;
+          margin-top: 12px;
+          margin-bottom: 2px;
+          display: block;
+          font-size: 15px;
+          box-shadow: 0 1px 4px #09b44d11;
+          max-width: 100%;
+        }
+        .mint-cta-header {
+          font-weight: 700;
+          font-size: 15.5px;
+          margin-bottom: 6px;
+          color: #198754;
+        }
+        .mint-cta-body {
+          font-size: 15px;
+          color: #222;
+        }
+        .mint-cta-link {
+          color: #09b44d;
+          font-weight: 600;
+          text-decoration: underline;
+          transition: color 0.15s;
+        }
+        .mint-cta-link:hover, .mint-cta-link:focus {
+          color: #0d6b3c;
+          text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+          .mint-cta-block {
+            padding: 12px 8px 10px 8px;
+            font-size: 14.5px;
+          }
+          .mint-cta-header {
+            font-size: 14.5px;
+          }
+          .mint-cta-body {
+            font-size: 14px;
+          }
+        }
+        /* Chat bubble fade-in animation */
+        .chat-bubble-animate {
+          animation: chatBubbleFadeIn 0.44s cubic-bezier(.33,1.02,.57,1) both;
+        }
+        @keyframes chatBubbleFadeIn {
+          0% { opacity: 0; transform: translateY(16px) scale(0.98); }
+          60% { opacity: 1; transform: translateY(-2px) scale(1.01); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        /* Mint avatar styles */
+        .mint-avatar {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #09b44d;
+          color: #fff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 14px;
+          margin-right: 8px;
+          vertical-align: middle;
+          box-shadow: 0 1px 4px #09b44d11;
+        }
+        @media (max-width: 600px) {
+          .mint-avatar { width: 20px; height: 20px; font-size: 12.5px; margin-right: 6px; }
+        }
+      `}</style>
     </div>
   );
 } 

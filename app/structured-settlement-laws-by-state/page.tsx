@@ -1071,23 +1071,18 @@ export default function StructuredSettlementLawsByState() {
         <h1 className="fw-bold text-success mb-4" style={{ fontSize: '2.1rem' }}>Structured Settlement Laws by State</h1>
         <section className="mb-3">
           <h2 className="h4 mb-2">State-Specific Regulations for Structured Settlement Transfers</h2>
-          <p className="text-muted mb-3">View state-specific regulations for structured settlement transfers.<br />Search for your state below to learn more.</p>
+          <p className="text-muted mb-3">Find your state's structured settlement laws and requirements below.</p>
           <input
             type="text"
             className="form-control mb-4"
-            placeholder="Search state..."
+            placeholder="Type your state name..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ maxWidth: 400, border: '2px solid #22b455', boxShadow: 'none' }}
+            style={{ maxWidth: 400, border: '2.5px solid #22b455', boxShadow: '0 1px 6px rgba(34,180,85,0.07)', background: '#fff' }}
             aria-label="Search for a state"
           />
-        </section>
-        <div className="card shadow-sm mb-4 mx-auto" style={{ maxWidth: 540, borderLeft: '5px solid #22b455', background: '#f8fafc' }}>
-          <div className="card-body text-center">
-            <p className="mb-3" style={{ fontSize: '1.08rem' }}>
-              We comply with all state regulations and court-approved processes for structured settlement transfers.<br />
-              Questions or want a free quote? We're here to help.
-            </p>
+          <div className="text-center mb-0">
+            <div className="small text-muted mb-2" style={{marginTop: '-0.5rem'}}>Or if you need help, call us:</div>
             <a
               href="tel:+19547649750"
               className="btn btn-success btn-lg fw-semibold"
@@ -1096,7 +1091,7 @@ export default function StructuredSettlementLawsByState() {
               Call Now for Assistance
             </a>
           </div>
-        </div>
+        </section>
         <section>
           {Object.keys(grouped).sort().map(letter => (
             <div key={letter} className="mb-4">
