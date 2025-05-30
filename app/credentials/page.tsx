@@ -1,10 +1,76 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from './Credentials.module.css';
+import Head from 'next/head';
 
 export default function CredentialsPage() {
   return (
     <>
+      <Head>
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Credentials & Accreditations – SmarterPayouts" />
+        <meta name="twitter:description" content="Discover our industry credentials and accreditations for structured settlement services at SmarterPayouts." />
+        <meta name="twitter:site" content="@SmarterPayouts" />
+        <meta name="twitter:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
+
+        {/* JSON-LD Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "SmarterPayouts",
+              "url": "https://smarterpayouts.com",
+              "logo": "https://smarterpayouts.com/assets/images/logo.png",
+              "contactPoint": [
+                {
+                  "@type": "ContactPoint",
+                  "telephone": "+1-954-764-9750",
+                  "contactType": "customer service",
+                  "areaServed": "US",
+                  "availableLanguage": "English"
+                }
+              ],
+              "sameAs": [
+                "https://www.bbb.org/",
+                "https://search.sunbiz.org/Inquiry/CorporationSearch/ByName"
+              ]
+            })
+          }}
+        />
+
+        {/* JSON-LD Breadcrumb */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://smarterpayouts.com/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Credentials",
+                  "item": "https://smarterpayouts.com/credentials"
+                }
+              ]
+            })
+          }}
+        />
+
+        {/* Open Graph meta tags */}
+        <meta property="og:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+      </Head>
       {/* HERO SECTION */}
       <section className="p-0 mb-4" style={{ background: "linear-gradient(90deg, #e9f9f1 60%, #fbc23322 100%)", boxShadow: "0 4px 24px rgba(9,180,77,0.08)" }}>
         <div className="container py-5 d-flex flex-column align-items-center justify-content-center">

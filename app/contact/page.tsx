@@ -41,6 +41,68 @@ export default function Contact() {
           content="Reach out to SmarterPayouts for fast, friendly support and answers to your structured settlement questions."
         />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact Us | SmarterPayouts - Structured Settlement Experts" />
+        <meta name="twitter:description" content="Contact SmarterPayouts for questions about your structured settlement, instant quotes, or support. We're here to help you get the most from your settlement." />
+        <meta name="twitter:site" content="@SmarterPayouts" />
+        <meta name="twitter:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
+
+        {/* JSON-LD Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "SmarterPayouts",
+              "url": "https://smarterpayouts.com",
+              "logo": "https://smarterpayouts.com/assets/images/logo.png",
+              "contactPoint": [
+                {
+                  "@type": "ContactPoint",
+                  "telephone": "+1-954-764-9750",
+                  "contactType": "customer service",
+                  "areaServed": "US",
+                  "availableLanguage": "English"
+                }
+              ],
+              "sameAs": [
+                "https://www.bbb.org/",
+                "https://search.sunbiz.org/Inquiry/CorporationSearch/ByName"
+              ]
+            })
+          }}
+        />
+
+        {/* JSON-LD Breadcrumb */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://smarterpayouts.com/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Contact",
+                  "item": "https://smarterpayouts.com/contact"
+                }
+              ]
+            })
+          }}
+        />
       </Head>
 
       {/* HERO SECTION */}

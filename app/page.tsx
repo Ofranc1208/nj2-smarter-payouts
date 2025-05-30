@@ -61,6 +61,70 @@ export default function Home() {
           as="image"
           href="/assets/images/fallback.jpg"
         />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="SmarterPayouts - Get the Highest Early Payout for Your Future Payments" />
+        <meta name="twitter:description" content="Get the highest early payout for your future payments instantly. No pushy sales calls. No sensitive personal information required. Industry's first online self-quoting platform." />
+        <meta name="twitter:site" content="@SmarterPayouts" />
+        <meta name="twitter:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
+
+        {/* JSON-LD Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "SmarterPayouts",
+              "url": "https://smarterpayouts.com",
+              "logo": "https://smarterpayouts.com/assets/images/logo.png",
+              "contactPoint": [
+                {
+                  "@type": "ContactPoint",
+                  "telephone": "+1-954-764-9750",
+                  "contactType": "customer service",
+                  "areaServed": "US",
+                  "availableLanguage": "English"
+                }
+              ],
+              "sameAs": [
+                "https://www.bbb.org/",
+                "https://search.sunbiz.org/Inquiry/CorporationSearch/ByName"
+              ]
+            })
+          }}
+        />
+
+        {/* JSON-LD SiteNavigationElement */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SiteNavigationElement",
+              "name": [
+                "Calculator",
+                "About",
+                "Contact",
+                "Testimonials",
+                "Credentials",
+                "Resources"
+              ],
+              "url": [
+                "https://smarterpayouts.com/pricing-calculator",
+                "https://smarterpayouts.com/about",
+                "https://smarterpayouts.com/contact",
+                "https://smarterpayouts.com/testimonials",
+                "https://smarterpayouts.com/credentials",
+                "https://smarterpayouts.com/resources"
+              ]
+            })
+          }}
+        />
+
+        <meta property="og:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
       </Head>
 
       {/* ✅ HERO SECTION */}
