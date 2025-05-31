@@ -4,21 +4,10 @@ import { db, storage } from "../utils/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { format } from 'date-fns';
+import { splitIntoParagraphs, renderAssistantParagraphs, shouldAppendCalculatorCTA, followupTopics } from '../utils/chatUtils';
 
 export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
-  // Name greeting logic
-  function getStoredName() {
-    if (typeof window !== 'undefined') {
-      return window.sessionStorage.getItem('mintChat_userName') || window.localStorage.getItem('mintChat_userName') || '';
-    }
-    return '';
-  }
-  function setStoredName(name: string) {
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.setItem('mintChat_userName', name);
-      window.localStorage.setItem('mintChat_userName', name);
-    }
-  }
+  // ===== User Session & Local Storage Logic =====
   function hasChattedBefore() {
     if (typeof window !== 'undefined') {
       return (
@@ -35,15 +24,31 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     }
   }
 
-  // Initial greeting state
-  const [userName, setUserName] = useState(getStoredName());
-  const [awaitingName, setAwaitingName] = useState(!getStoredName());
-  const [messages, setMessages] = useState(() => {
-    if (getStoredName()) {
-      return [{ role: 'assistant', content: `Welcome back, ${getStoredName()}! How can I assist you today?` }];
+  // ===== Staged Chat Flow State =====
+  const [stagedGreetingDone, setStagedGreetingDone] = useState(false);
+  const [stagedCTADone, setStagedCTADone] = useState(false);
+  const [stagedFollowupDone, setStagedFollowupDone] = useState(false);
+  const [stagedStep3Done, setStagedStep3Done] = useState(false);
+  const [stagedTyping, setStagedTyping] = useState(false);
+  const [stagedPending, setStagedPending] = useState<string | null>(null);
+  const [stagedMessages, setStagedMessages] = useState<{ role: string; content: string; cta?: boolean; followup?: boolean; step3?: boolean }[]>([]);
+  const [stagedShowTyping, setStagedShowTyping] = useState(false);
+  const [stagedShowStep3Typing, setStagedShowStep3Typing] = useState(false);
+
+  // ===== Typing Animation & Notification =====
+  const notificationSoundPath = "/assets/sounds/notification.mp3";
+  function playNotificationSound() {
+    if (typeof window !== 'undefined' && window.Audio) {
+      try {
+        const audio = new window.Audio(notificationSoundPath);
+        audio.volume = 0.18;
+        audio.play().catch(() => {});
+      } catch {}
     }
-    return [{ role: 'assistant', content: `Hi there! I'm Mint, your AI assistant. What's your name, or what can I call you today?` }];
-  });
+  }
+
+  // Initial greeting state
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -53,18 +58,6 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
   const [showUpload, setShowUpload] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [sessionId] = useState(getSessionId() || 'unknown');
-
-  const suggestedReplies = [
-    "How do structured settlements work?",
-    "Can I get a lump sum for my payments?",
-    "How fast can I get a quote?",
-    "What documents do I need?",
-    "Is there a fee to sell my structured settlement?",
-    "Do you require personal info for a quote?",
-    "Where is your company located?",
-    "Is SmarterPayouts a trusted and verified company?",
-    "What makes SmarterPayouts different?"
-  ];
 
   // Utility to generate a random session ID if not available
   function getSessionId() {
@@ -118,26 +111,6 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     }
   }
 
-  // Helper: Split Mint's response into paragraphs (2-3 max for long answers)
-  function splitIntoParagraphs(text: string): string[] {
-    // Prefer double newlines, fallback to splitting on sentences
-    if (text.includes("\n\n")) {
-      return text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
-    }
-    // Otherwise, split into sentences and group into paragraphs
-    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-    const paragraphs: string[] = [];
-    let current = "";
-    for (let i = 0; i < sentences.length; i++) {
-      current += sentences[i].trim() + " ";
-      if ((i + 1) % 2 === 0 || i === sentences.length - 1) {
-        paragraphs.push(current.trim());
-        current = "";
-      }
-    }
-    return paragraphs;
-  }
-
   // Helper: Render Mint's paragraphs with enhancements
   function renderAssistantParagraphs(paragraphs: string[]) {
     return paragraphs.map((p, idx) => {
@@ -189,30 +162,20 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     typeNext();
   }
 
+  const stagedStep3Message = `I'm built using the latest AI model from ChatGPT — feel free to chat with me just like you would with a person! I can answer most questions about structured settlements and our process.\n\nWould you like to:\n• Chat with me now\n• Connect with one of our team members\n• Or give us a call anytime at (954) 764-9750?`;
+
   const sendMessage = async () => {
     if (!input.trim()) return;
-    // Name flow: if awaiting name, handle name logic
-    if (awaitingName) {
-      const name = input.trim();
-      setMessages([...messages, { role: 'user', content: name }]);
-      setInput('');
-      setChattedBefore();
-      // Simple name validation: at least 2 letters, not just emoji/blank
-      if (/^[a-zA-Z][a-zA-Z\s\-']{1,30}$/.test(name)) {
-        setUserName(name);
-        setStoredName(name);
-        setAwaitingName(false);
-        setTimeout(() => {
-          setMessages(msgs => [...msgs, { role: 'assistant', content: `Nice to meet you, ${name}! How can I assist you today?` }]);
-        }, 400);
-      } else {
-        setUserName('');
-        setStoredName('');
-        setAwaitingName(false);
-        setTimeout(() => {
-          setMessages(msgs => [...msgs, { role: 'assistant', content: `No worries! How can I assist you today?` }]);
-        }, 400);
-      }
+    if (isAssociateRequest(input)) {
+      setMessages([...messages, { role: 'user', content: input }]);
+      setInput("");
+      setTyping(true);
+      setTimeout(() => {
+        setMessages(msgs => [...msgs, { role: 'assistant', content: "Sure! Please hold on for a moment while I connect you…" }]);
+        setTyping(false);
+        setPendingMessage(null);
+        playNotificationSound();
+      }, 1200 + Math.random() * 600);
       return;
     }
     setChattedBefore();
@@ -264,61 +227,7 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
           messages: [
             {
               role: "system",
-              content: `You are Mint, an AI-driven chatbot for SmarterPayouts, a Florida-based structured settlement company that helps customers sell their future structured settlement payments for a lump sum. You are friendly, accurate, and always helpful.
-
-You assist users by providing clear, up-to-date information about:
-- How structured settlements work
-- The process of selling structured settlement payments
-- How to get a quote (users can call, use the online calculator for an instant quote with no personal info required, or chat with Mint)
-- What happens after accepting an offer (application, required documents, court approval, and payout)
-- How fast they can receive a quote and their funds (most clients receive funds within 24–72 hours after court approval)
-- Required documents (none needed for a quote; only needed if proceeding)
-- Fees or costs involved (there are no fees to get a quote or start the process)
-- Legal considerations (general info, not legal advice)
-- The fact that no personal information is required to get an estimate
-- Typical timelines and payout process (the full process usually takes 30–45 days, but expedited options are available)
-- That all transactions are court-approved for the customer's protection
-- That users can sell all or just part of their structured settlement, depending on their needs
-- SmarterPayouts' credentials, experience, and customer trust
-
-You do NOT ask for sensitive personal information (such as SSN, bank details) during the chat.
-
-You always make it clear that a free, no-obligation estimate is available, and personal info is only required later if the customer wishes to proceed.
-
-Always be professional, helpful, and friendly. Do not provide legal or tax advice.
-
-If you don't know the answer, say: 'I recommend speaking with one of our human specialists for that question.'
-
-Always include these disclaimers in relevant conversations:
-- "We do not provide legal advice. The information provided is based on current rates and offers, which may change."
-- "We never sell or rent your personal information."
-
-For all key topics (such as company information, process, fees, or documents), format your answers as short, clear paragraphs (1–2 sentences each), separated by a blank line (double newline). After providing the main information, always end with this professional closing:
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.
-
-If the user asks any of the following questions, answer as follows (using the same paragraph formatting and closing):
-- Where is your company located?\nWe are a Florida-based company, in business for 7 years, and registered with the Better Business Bureau.
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.
-- Is SmarterPayouts a trusted and verified company?\nYes! SmarterPayouts is fully registered in Florida, listed on SunBiz, and verified by the Better Business Bureau. We are committed to transparency and client trust.
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.
-- What makes SmarterPayouts different?\nWe offer instant online quotes, a 100% digital process, and never use pushy sales tactics. Our focus is on transparency and your comfort.
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.
-- How can I contact you?\nYou can reach us by phone at (954) 764-9750, by email at info@smarterpayouts.com, or by visiting our office at 433 Plaza Real, Suite 275, Boca Raton, FL 33432. You can also use this chat or our contact form, and our team will respond within 24 hours on business days.
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.
-- What is your phone number?\nOur phone number is (954) 764-9750. You can call us Monday–Friday, 9am–6pm EST, or use this chat for assistance.
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.
-- Where is your office?\nOur office is located at 433 Plaza Real, Suite 275, Boca Raton, FL 33432. You can also contact us by phone or chat.
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.
-- Where are you located?\nWe are based in Boca Raton, Florida. Our office address is 433 Plaza Real, Suite 275, Boca Raton, FL 33432. Feel free to call us at (954) 764-9750 or use this chat for help.
-
-If you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.`
+              content: `You are Mint, an AI-driven chatbot for SmarterPayouts, a Florida-based structured settlement company. You are friendly, accurate, and always helpful.\n\nYou assist users by providing clear, up-to-date information about structured settlements, the process of selling payments, and how to get a quote (users can call, use the online calculator, or chat with Mint).\n\nYou do NOT ask for sensitive personal information (such as SSN, bank details) during the chat.\n\nYou always make it clear that a free, no-obligation estimate is available, and personal info is only required later if the customer wishes to proceed.\n\nAlways be professional, helpful, and friendly. Do not provide legal or tax advice.\n\nIf you don't know the answer, say: 'I recommend speaking with one of our human specialists for that question.'\n\nAlways include these disclaimers in relevant conversations:\n- "We do not provide legal advice. The information provided is based on current rates and offers, which may change."\n- "We never sell or rent your personal information."\n\nFor all key topics (such as company information, process, fees, or documents), format your answers as short, clear paragraphs (1–2 sentences each), separated by a blank line (double newline). After providing the main information, always end with this professional closing:\n\nIf you'd like to speak with one of our Settlement Client Relations Associates, just let me know! You can also call us anytime at (954) 764-9750.`
             },
             ...newMessages.map(({ role, content }) => ({ role, content }))
           ],
@@ -416,6 +325,72 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
     }, 100);
   }
 
+  // Smart connect/agent handler
+  const associateTriggers = [
+    'connect me', 'talk to a person', 'agent', 'representative', 'team member', 'specialist', 'yes', 'real person', 'human', 'associate', 'call', 'speak to', 'speak with', 'customer service'
+  ];
+  function isAssociateRequest(text: string) {
+    const normalized = text.toLowerCase();
+    return associateTriggers.some(t => normalized.includes(t));
+  }
+
+  // On mount, clear any old suggestedReplies or related keys from localStorage/sessionStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('suggestedReplies');
+      window.sessionStorage.removeItem('suggestedReplies');
+    }
+  }, []);
+
+  // Restore staged flow useEffect(s)
+  useEffect(() => {
+    // Only run staged flow if no messages yet
+    if (messages.length === 0 && stagedMessages.length === 0) {
+      // Step 1: Greeting
+      setStagedTyping(true);
+      const greeting = "Hi there! I'm Mint, SmarterPayouts' AI assistant. Would you like to see how much your settlement payments are worth today?";
+      let greetingTimeout = setTimeout(() => {
+        setStagedMessages([{ role: 'assistant', content: greeting }]);
+        setStagedTyping(false);
+        setStagedGreetingDone(true);
+      }, 1000);
+      // Step 2: Calculator CTA
+      let ctaTimeout = setTimeout(() => {
+        setStagedShowTyping(true);
+        setTimeout(() => {
+          setStagedShowTyping(false);
+          setStagedMessages(msgs => [...msgs, { role: 'assistant', content: 'Try our industry-first Online Early Payout Calculator.\nNo personal information required — guaranteed.', cta: true }]);
+          setStagedCTADone(true);
+        }, 1250);
+      }, 2250);
+      // Step 3: Follow-up topics
+      let followupTimeout = setTimeout(() => {
+        setStagedShowTyping(true);
+        setTimeout(() => {
+          setStagedShowTyping(false);
+          setStagedMessages(msgs => [...msgs, { role: 'assistant', content: 'If you\'d like, I can help you with these topics:', followup: true }]);
+          setStagedFollowupDone(true);
+        }, 1500);
+      }, 4500);
+      // Step 4: Step 3 message (after 10s pause from Step 3)
+      let step3Timeout = setTimeout(() => {
+        setStagedShowStep3Typing(true);
+        setTimeout(() => {
+          setStagedShowStep3Typing(false);
+          setStagedMessages(msgs => [...msgs, { role: 'assistant', content: stagedStep3Message, step3: true }]);
+          setStagedStep3Done(true);
+          playNotificationSound();
+        }, 1750);
+      }, 4500 + 10000); // 10s pause after Step 3 topics
+      return () => {
+        clearTimeout(greetingTimeout);
+        clearTimeout(ctaTimeout);
+        clearTimeout(followupTimeout);
+        clearTimeout(step3Timeout);
+      };
+    }
+  }, []);
+
   return (
     <div
       style={{
@@ -423,7 +398,7 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
         bottom: 24,
         right: 24,
         width: 340,
-        height: 520,
+        height: 620,
         maxWidth: "95vw",
         zIndex: 1100,
         background: "#fff",
@@ -475,129 +450,269 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
         aria-relevant="additions text"
         tabIndex={0}
       >
-        {messages.map((msg, i) => (
-          <div key={i} style={{ marginBottom: 10, textAlign: msg.role === "user" ? "right" : "left", display: 'block' }}>
-            {msg.role === "assistant" && (
-              <span className="mint-avatar">M</span>
+        {/* --- Staged greeting/CTA flow --- */}
+        {!hasChattedBefore() && stagedMessages.length > 0 ? (
+          <>
+            {stagedMessages.map((msg, i) => (
+              <div key={i} style={{ marginBottom: 10, textAlign: "left", display: 'flex', alignItems: 'flex-start' }}>
+                <span className="mint-avatar" style={{ marginTop: 0, marginRight: 8 }}>M</span>
+                {msg.cta ? (
+                  <span
+                    style={{
+                      background: '#e9f9f1',
+                      color: '#222',
+                      borderRadius: 12,
+                      padding: '16px 18px',
+                      fontWeight: 400,
+                      fontSize: 16,
+                      marginTop: 0,
+                      marginBottom: 2,
+                      boxShadow: '0 1px 4px #09b44d11',
+                      whiteSpace: 'pre-line',
+                      lineHeight: 1.5,
+                      maxWidth: '80%',
+                      minWidth: 0,
+                      display: 'inline-block',
+                      alignSelf: 'flex-start',
+                    }}
+                  >
+                    Try our industry-first{' '}
+                    <a
+                      href="/pricing-calculator"
+                      style={{
+                        color: '#09b44d',
+                        fontWeight: 600,
+                        textDecoration: 'underline',
+                        transition: 'color 0.15s',
+                      }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      tabIndex={0}
+                      aria-label="Online Early Payout Calculator (opens in new tab)"
+                      onMouseOver={e => { e.currentTarget.style.color = '#0d6b3c'; }}
+                      onMouseOut={e => { e.currentTarget.style.color = '#09b44d'; }}
+                    >
+                      Online Early Payout Calculator
+                    </a>
+                    .<br/>
+                    No personal information required — guaranteed.
+                  </span>
+                ) : msg.followup ? (
+                  <span style={{
+                    display: "inline-block",
+                    background: "#fff",
+                    color: "#222",
+                    borderRadius: 12,
+                    padding: "8px 14px",
+                    maxWidth: "80%",
+                    fontSize: 15,
+                    boxShadow: "0 1px 4px #0001",
+                    whiteSpace: 'pre-line',
+                    verticalAlign: 'middle',
+                  }}>
+                    {msg.content}
+                    <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {followupTopics.map((topic: string, idx: number) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setInput(topic)}
+                          style={{
+                            border: 'none',
+                            background: '#e9f9f1',
+                            color: '#198754',
+                            borderRadius: 20,
+                            padding: '9px 20px',
+                            fontSize: 14,
+                            fontWeight: 500,
+                            marginBottom: 0,
+                            cursor: 'pointer',
+                            boxShadow: '0 1px 4px #09b44d11',
+                            transition: 'background 0.15s, color 0.15s',
+                            outline: 'none',
+                          }}
+                          tabIndex={0}
+                          aria-label={topic}
+                          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setInput(topic); } }}
+                          onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 2px #09b44d55'; }}
+                          onBlur={e => { e.currentTarget.style.boxShadow = '0 1px 4px #09b44d11'; }}
+                          onMouseOver={e => {
+                            e.currentTarget.style.background = '#d1f7e6';
+                            e.currentTarget.style.color = '#0d6b3c';
+                          }}
+                          onMouseOut={e => {
+                            e.currentTarget.style.background = '#e9f9f1';
+                            e.currentTarget.style.color = '#198754';
+                          }}
+                        >
+                          {topic}
+                        </button>
+                      ))}
+                    </div>
+                  </span>
+                ) : msg.step3 ? (
+                  <span style={{
+                    display: "inline-block",
+                    background: "#fff",
+                    color: "#222",
+                    borderRadius: 12,
+                    padding: "8px 14px",
+                    maxWidth: "80%",
+                    fontSize: 15,
+                    boxShadow: "0 1px 4px #0001",
+                    whiteSpace: 'pre-line',
+                    verticalAlign: 'middle',
+                  }}>
+                    {msg.content.split(/(\(954\) 764-9750)/g).map((part, idx) =>
+                      part === "(954) 764-9750" ? (
+                        <a key={idx} href="tel:+19547649750" style={{ color: '#09b44d', fontWeight: 600, textDecoration: 'underline' }}>(954) 764-9750</a>
+                      ) : part
+                    )}
+                  </span>
+                ) : (
+                  <span style={{
+                    display: "inline-block",
+                    background: "#fff",
+                    color: "#222",
+                    borderRadius: 12,
+                    padding: "8px 14px",
+                    maxWidth: "80%",
+                    fontSize: 15,
+                    boxShadow: "0 1px 4px #0001",
+                    whiteSpace: 'pre-line',
+                    verticalAlign: 'middle'
+                  }}>{msg.content}</span>
+                )}
+              </div>
+            ))}
+            {/* Typing indicator for staged flow */}
+            {stagedShowTyping && (
+              <div style={{ marginBottom: 10, textAlign: 'left', display: 'flex', alignItems: 'flex-start' }}>
+                <span className="mint-avatar" style={{ marginTop: 0, marginRight: 8 }}>M</span>
+                <span style={{
+                  display: 'inline-block',
+                  background: '#fff',
+                  color: '#198754',
+                  borderRadius: 12,
+                  padding: '8px 14px',
+                  fontSize: 15,
+                  fontStyle: 'italic',
+                  boxShadow: '0 1px 4px #09b44d11',
+                  maxWidth: '80%',
+                  verticalAlign: 'middle',
+                  letterSpacing: 1.5,
+                }}>
+                  <span className="mint-typing-dots" style={{ display: 'inline-block', minWidth: 24 }}>
+                    <span className="dot" style={{ animationDelay: '0ms' }}>.</span>
+                    <span className="dot" style={{ animationDelay: '150ms' }}>.</span>
+                    <span className="dot" style={{ animationDelay: '300ms' }}>.</span>
+                  </span>
+                </span>
+              </div>
             )}
-            <span className={i === messages.length - 1 ? "chat-bubble-animate" : ""} style={{
-              display: "inline-block",
-              background: msg.role === "user" ? "#e9f9f1" : "#fff",
-              color: "#222",
-              borderRadius: 12,
-              padding: "8px 14px",
-              maxWidth: "80%",
-              fontSize: 15,
-              boxShadow: msg.role === "user" ? "0 1px 4px #09b44d22" : "0 1px 4px #0001",
-              verticalAlign: 'middle'
-            }}>{msg.role === "assistant"
-              ? <>{
-                  (() => {
+            {stagedTyping && stagedPending && (
+              <div style={{ marginBottom: 10, textAlign: 'left', display: 'block' }}>
+                <span className="mint-avatar">M</span>
+                <span style={{
+                  display: 'inline-block',
+                  background: '#fff',
+                  color: '#222',
+                  borderRadius: 12,
+                  padding: '8px 14px',
+                  maxWidth: '80%',
+                  fontSize: 15,
+                  boxShadow: '0 1px 4px #0001',
+                  whiteSpace: 'pre-line',
+                  verticalAlign: 'middle'
+                }}>{stagedPending.replace(/\|$/, '')}</span>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </>
+        ) : (
+          <>
+            {messages.map((msg, i) => (
+              <div key={i} style={{ marginBottom: 10, textAlign: msg.role === "user" ? "right" : "left", display: 'block' }}>
+                {msg.role === "assistant" && (
+                  <span className="mint-avatar">M</span>
+                )}
+                <span className={i === messages.length - 1 ? "chat-bubble-animate" : ""} style={{
+                  display: "inline-block",
+                  background: msg.role === "user" ? "#e9f9f1" : "#fff",
+                  color: "#222",
+                  borderRadius: 12,
+                  padding: "8px 14px",
+                  maxWidth: "80%",
+                  fontSize: 15,
+                  boxShadow: msg.role === "user" ? "0 1px 4px #09b44d22" : "0 1px 4px #0001",
+                  verticalAlign: 'middle'
+                }}>{msg.role === "assistant"
+                  ? <>{(() => {
                     const paragraphs = splitIntoParagraphs(msg.content);
                     return <>
                       {renderAssistantParagraphs(paragraphs)}
                       {shouldAppendCalculatorCTA(paragraphs) && <span style={{ display: 'block', marginTop: 10 }} dangerouslySetInnerHTML={{ __html: CALCULATOR_CTA }} />}
                     </>;
-                  })()
-                }</>
-              : msg.content}
-            </span>
-            {/* Feedback buttons for Mint replies except the initial greeting */}
-            {msg.role === "assistant" && i !== 0 && !feedbackGiven[i] && (
-              <div style={{ marginTop: 6, marginLeft: 32, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
-                <span style={{ color: '#888', marginRight: 4 }}>Was this helpful?</span>
-                <button
-                  aria-label="Helpful"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#09b44d', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
-                  onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
-                  onMouseOver={e => (e.currentTarget.style.color = '#0d6b3c')}
-                  onMouseOut={e => (e.currentTarget.style.color = '#09b44d')}
-                >👍</button>
-                <button
-                  aria-label="Not helpful"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
-                  onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
-                  onMouseOver={e => (e.currentTarget.style.color = '#b00020')}
-                  onMouseOut={e => (e.currentTarget.style.color = '#888')}
-                >👎</button>
-              </div>
-            )}
-            {msg.role === "assistant" && i !== 0 && feedbackGiven[i] && (
-              <div style={{ marginTop: 6, marginLeft: 32, color: '#198754', fontSize: 13.5, fontWeight: 500 }}>Thank you for your feedback!</div>
-            )}
-            {/* Show pill buttons only after the initial assistant message and only for the first message */}
-            {i === 0 && msg.role === "assistant" && (
-              <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {suggestedReplies.map((reply, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setInput(reply)}
-                    style={{
-                      border: 'none',
+                  })()}</>
+                  : msg.content}
+                </span>
+                {/* Feedback buttons for Mint replies except the initial greeting */}
+                {msg.role === "assistant" && i !== 0 && !feedbackGiven[i] && (
+                  <div style={{ marginTop: 6, marginLeft: 32, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
+                    <span style={{ color: '#888', marginRight: 4 }}>Was this helpful?</span>
+                    <button
+                      aria-label="Helpful"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#09b44d', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
+                      onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
+                      onMouseOver={e => (e.currentTarget.style.color = '#0d6b3c')}
+                      onMouseOut={e => (e.currentTarget.style.color = '#09b44d')}
+                    >👍</button>
+                    <button
+                      aria-label="Not helpful"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
+                      onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
+                      onMouseOver={e => (e.currentTarget.style.color = '#b00020')}
+                      onMouseOut={e => (e.currentTarget.style.color = '#888')}
+                    >👎</button>
+                  </div>
+                )}
+                {msg.role === "assistant" && i !== 0 && feedbackGiven[i] && (
+                  <div style={{ marginTop: 6, marginLeft: 32, color: '#198754', fontSize: 13.5, fontWeight: 500 }}>Thank you for your feedback!</div>
+                )}
+                {showUpload && !uploading && (
+                  <div style={{ marginTop: 10, marginLeft: 32 }}>
+                    <label htmlFor="chat-upload-input" style={{
                       background: '#e9f9f1',
                       color: '#198754',
-                      borderRadius: 20,
-                      padding: '7px 16px',
-                      fontSize: 14,
-                      fontWeight: 500,
-                      marginBottom: 4,
+                      borderRadius: 8,
+                      padding: '7px 18px',
+                      fontWeight: 600,
+                      fontSize: 15,
                       cursor: 'pointer',
+                      border: '1.5px solid #09b44d',
                       boxShadow: '0 1px 4px #09b44d11',
-                      transition: 'background 0.15s, color 0.15s',
-                      outline: 'none',
-                    }}
-                    tabIndex={0}
-                    aria-label={reply}
-                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { setInput(reply); } }}
-                    onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 2px #09b44d55'; }}
-                    onBlur={e => { e.currentTarget.style.boxShadow = '0 1px 4px #09b44d11'; }}
-                    onMouseOver={e => {
-                      e.currentTarget.style.background = '#d1f7e6';
-                      e.currentTarget.style.color = '#0d6b3c';
-                    }}
-                    onMouseOut={e => {
-                      e.currentTarget.style.background = '#e9f9f1';
-                      e.currentTarget.style.color = '#198754';
-                    }}
-                  >
-                    {reply}
-                  </button>
-                ))}
+                      display: 'inline-block',
+                    }}>
+                      Upload Documents
+                      <input
+                        id="chat-upload-input"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png,.docx"
+                        style={{ display: 'none' }}
+                        onChange={handleFileUpload}
+                        tabIndex={0}
+                        aria-label="Upload documents"
+                      />
+                    </label>
+                  </div>
+                )}
+                {uploading && (
+                  <div style={{ marginTop: 10, marginLeft: 32, color: '#198754', fontWeight: 500 }}>Uploading…</div>
+                )}
               </div>
-            )}
-            {showUpload && !uploading && (
-              <div style={{ marginTop: 10, marginLeft: 32 }}>
-                <label htmlFor="chat-upload-input" style={{
-                  background: '#e9f9f1',
-                  color: '#198754',
-                  borderRadius: 8,
-                  padding: '7px 18px',
-                  fontWeight: 600,
-                  fontSize: 15,
-                  cursor: 'pointer',
-                  border: '1.5px solid #09b44d',
-                  boxShadow: '0 1px 4px #09b44d11',
-                  display: 'inline-block',
-                }}>
-                  Upload Documents
-                  <input
-                    id="chat-upload-input"
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.docx"
-                    style={{ display: 'none' }}
-                    onChange={handleFileUpload}
-                    tabIndex={0}
-                    aria-label="Upload documents"
-                  />
-                </label>
-              </div>
-            )}
-            {uploading && (
-              <div style={{ marginTop: 10, marginLeft: 32, color: '#198754', fontWeight: 500 }}>Uploading…</div>
-            )}
-          </div>
-        ))}
+            ))}
+          </>
+        )}
         {/* Typing indicator and typing effect */}
         {typing && (
           <div style={{ marginBottom: 10, textAlign: 'left', display: 'block' }}>
@@ -653,17 +768,17 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
           onKeyDown={e => e.key === "Enter" && sendMessage()}
           placeholder="Type your message..."
           style={{ flex: 1, border: "none", outline: "none", fontSize: 15, padding: 8, background: "#f8f9fa", borderRadius: 8 }}
-          disabled={loading}
+          disabled={loading || stagedTyping}
           aria-label="Type your message"
           tabIndex={0}
         />
         <button
           onClick={sendMessage}
-          disabled={loading || !input.trim()}
-          style={{ marginLeft: 8, background: "#09b44d", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontWeight: 600, fontSize: 15, cursor: loading ? "not-allowed" : "pointer" }}
+          disabled={loading || !input.trim() || stagedTyping}
+          style={{ marginLeft: 8, background: "#09b44d", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontWeight: 600, fontSize: 15, cursor: loading || stagedTyping ? "not-allowed" : "pointer" }}
           aria-label="Send message"
           tabIndex={0}
-          onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !loading && input.trim()) { sendMessage(); } }}
+          onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !loading && input.trim() && !stagedTyping) { sendMessage(); } }}
         >
           {loading ? "..." : "Send"}
         </button>
@@ -762,6 +877,19 @@ If you'd like to speak with one of our Settlement Client Relations Associates, j
         }
         @media (max-width: 600px) {
           .mint-avatar { width: 20px; height: 20px; font-size: 12.5px; margin-right: 6px; }
+        }
+        .mint-typing-dots .dot {
+          display: inline-block;
+          font-size: 22px;
+          font-weight: 700;
+          opacity: 0.7;
+          animation: mintTypingBlink 1.1s infinite both;
+        }
+        .mint-typing-dots .dot:nth-child(2) { animation-delay: 0.18s; }
+        .mint-typing-dots .dot:nth-child(3) { animation-delay: 0.36s; }
+        @keyframes mintTypingBlink {
+          0%, 80%, 100% { opacity: 0.2; }
+          40% { opacity: 1; }
         }
       `}</style>
     </div>
