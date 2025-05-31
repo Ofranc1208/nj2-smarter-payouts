@@ -38,7 +38,7 @@ export function splitIntoParagraphs(text: string): string[] {
 }
 
 export function renderAssistantParagraphs(paragraphs: string[], keyPrefix = "para"): JSX.Element[] {
-  return paragraphs.map((p, i) => (
+  return paragraphs.map((p: string, i: number) => (
     <p key={`${keyPrefix}-${i}`} className="mb-2 text-gray-800 dark:text-gray-100">{p}</p>
   ));
 }
