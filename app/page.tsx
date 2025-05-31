@@ -129,10 +129,32 @@ export default function Home() {
 
       {/* ✅ HERO SECTION */}
       <section className="hero">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/assets/images/fallback.jpg"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: -1
+          }}
+        >
+          <source src="/assets/videos/promos/counting-cash.webm" type="video/webm" />
+          Your browser does not support the video tag.
+        </video>
+        {/*
         <video autoPlay muted loop playsInline preload="metadata" id="bg-video" poster="/assets/images/fallback.jpg">
           <source src="/assets/videos/promos/counting-cash.mp4" type="video/mp4" />
           <img src="/assets/images/fallback.jpg" alt="Structured Settlement Video Preview" />
         </video>
+        */}
 
         <div className="overlay"></div>
 

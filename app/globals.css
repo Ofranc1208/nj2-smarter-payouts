@@ -68,6 +68,7 @@ h1, h2, h3, h4, h5 {
 /* === HERO VIDEO SECTION === */
 .hero {
   position: relative;
+  z-index: 0;
   width: 100%;
   min-height: 100vh;
   background-color: #000;
@@ -376,6 +377,9 @@ h2, .fw-bold {
 @media (max-width: 600px) {
   .card-steps {
     padding: 0.7rem 0.5rem;
+  }
+  .hero-content {
+    margin-bottom: 120px !important; /* Ensures FAB and tooltip never overlap hero buttons */
   }
 }
 
