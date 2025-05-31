@@ -31,8 +31,8 @@ export default function HeroSection() {
         }
         @media (max-width: 600px) {
           .hero-section-spaced {
-            padding-top: 18vh;
-            padding-bottom: 7.5rem;
+            padding-top: 28vh;
+            padding-bottom: 4.5rem;
           }
           .hero-content-wrapper {
             margin-bottom: 0;
@@ -43,8 +43,8 @@ export default function HeroSection() {
         }
         @media (max-width: 400px) {
           .hero-section-spaced {
-            padding-top: 15vh;
-            padding-bottom: 8.5rem;
+            padding-top: 24vh;
+            padding-bottom: 5.5rem;
           }
           .hero-cta-bottom {
             margin-bottom: 5.5rem;

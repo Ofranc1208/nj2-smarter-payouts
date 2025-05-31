@@ -26,6 +26,8 @@ export default function Step1PaymentDetails({
   const router = useRouter();
   const additionalDetailsRef = useRef<HTMLDivElement>(null);
   const [additionalDetailsError, setAdditionalDetailsError] = useState('');
+  const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
+  const [bannerTimeout, setBannerTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const {
     amount,
@@ -77,25 +79,24 @@ export default function Step1PaymentDetails({
 
   const handleContinue = () => {
     setAdditionalDetailsError('');
+    setTouched({});
     if (!handleValidate()) {
-      // If Additional Details is collapsed, expand and scroll to it
       if (isAdditionalDetailsCollapsed) {
         setIsAdditionalDetailsCollapsed(false);
         setTimeout(() => {
           additionalDetailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 200);
       }
-      // Check for missing required fields in Additional Details
       const missingFields = [];
       if (!startDate) missingFields.push('startDate');
       if (!endDate) missingFields.push('endDate');
-      // Add more required fields as needed
       if (missingFields.length > 0) {
         setAdditionalDetailsError('Please complete the missing fields to continue.');
+        if (bannerTimeout) clearTimeout(bannerTimeout);
+        setBannerTimeout(setTimeout(() => setAdditionalDetailsError(''), 3000));
       }
       return;
     }
-
     if (paymentType === 'Guaranteed') {
       const result = calculateGuaranteedNPV({
         amount: parseFloat(amount),
@@ -107,7 +108,6 @@ export default function Step1PaymentDetails({
       });
       setCalculationResult(result);
     }
-
     onNext();
   };
 
@@ -141,6 +141,23 @@ export default function Step1PaymentDetails({
     // At least 6 months apart
     return eDate > sDate && (eDate.getFullYear() - sDate.getFullYear()) * 12 + (eDate.getMonth() - sDate.getMonth()) >= 6;
   };
+
+  // Field-level error logic: only show after user has touched the field
+  const showFieldError = (field: string) => {
+    return touched[field] && errors[field];
+  };
+
+  // Clear banner if all fields are valid
+  useEffect(() => {
+    const amt = parseFloat(amount);
+    const validAmount = !isNaN(amt) && amt >= 100 && amt <= 1000000;
+    const validStart = validateStartDate(startDate);
+    const validEnd = validateEndDateRange(startDate, endDate);
+    if (validAmount && validStart && validEnd && additionalDetailsError) {
+      setAdditionalDetailsError('');
+      if (bannerTimeout) clearTimeout(bannerTimeout);
+    }
+  }, [amount, startDate, endDate]);
 
   return (
     <div className="step step1 calculator">
@@ -295,10 +312,14 @@ export default function Step1PaymentDetails({
                   type="date"
                   value={startDate}
                   min="2024-05-14"
-                  onChange={(e) => updateField('startDate', e.target.value)}
-                  className={`form-control ${errors.startDate || additionalDetailsError && !startDate ? 'is-invalid' : ''}`}
+                  onChange={(e) => {
+                    updateField('startDate', e.target.value);
+                    setTouched(t => ({ ...t, startDate: true }));
+                  }}
+                  onBlur={() => setTouched(t => ({ ...t, startDate: true }))}
+                  className={`form-control ${showFieldError('startDate') || (additionalDetailsError && !startDate && touched.startDate) ? 'is-invalid' : ''}`}
                 />
-                {errors.startDate && <div className="invalid-feedback">{errors.startDate}</div>}
+                {showFieldError('startDate') && <div className="invalid-feedback">{errors.startDate}</div>}
               </div>
               <div className="col-md-6">
                 <label className="calculator-label">
@@ -314,10 +335,14 @@ export default function Step1PaymentDetails({
                 <input
                   type="date"
                   value={endDate}
-                  onChange={(e) => updateField('endDate', e.target.value)}
-                  className={`form-control ${errors.endDate || additionalDetailsError && !endDate ? 'is-invalid' : ''}`}
+                  onChange={(e) => {
+                    updateField('endDate', e.target.value);
+                    setTouched(t => ({ ...t, endDate: true }));
+                  }}
+                  onBlur={() => setTouched(t => ({ ...t, endDate: true }))}
+                  className={`form-control ${showFieldError('endDate') || (additionalDetailsError && !endDate && touched.endDate) ? 'is-invalid' : ''}`}
                 />
-                {errors.endDate && <div className="invalid-feedback">{errors.endDate}</div>}
+                {showFieldError('endDate') && <div className="invalid-feedback">{errors.endDate}</div>}
               </div>
             </div>
           </div>

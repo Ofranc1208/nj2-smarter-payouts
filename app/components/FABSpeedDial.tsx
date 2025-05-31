@@ -6,8 +6,26 @@ import MyChatComponent from './MyChatComponent';
 export default function FABSpeedDial() {
   const [isOpen, setIsOpen] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [pulse, setPulse] = useState(false);
   const fabRef = useRef<HTMLDivElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
+
+  // Pulse animation every 7 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulse(true);
+      setTimeout(() => setPulse(false), 1200);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Tooltip on first load
+  useEffect(() => {
+    setShowTooltip(true);
+    const timer = setTimeout(() => setShowTooltip(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const toggleFAB = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -54,41 +72,63 @@ export default function FABSpeedDial() {
           display: 'flex',
           flexDirection: 'column-reverse',
           alignItems: 'flex-end',
-          gap: '16px'
+          gap: '16px',
+          maxWidth: 'calc(100vw - 16px)'
         }}
       >
-        {/* Main FAB Button */}
+        {/* Tooltip on first load */}
+        {showTooltip && (
+          <div style={{
+            position: 'absolute',
+            bottom: '70px',
+            right: 0,
+            background: '#fff',
+            color: '#222',
+            borderRadius: 8,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.13)',
+            padding: '0.7rem 1.1rem',
+            fontSize: 15,
+            fontWeight: 500,
+            zIndex: 1001,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            animation: 'fadeInOut 3s linear'
+          }}>
+            <span role="img" aria-label="wave">👋</span> Need help? Click here to chat!
+          </div>
+        )}
+        {/* Main White Questions Button (chat trigger) */}
         <button
-          className="fab-main"
+          className={`fab-main fab-questions${pulse ? ' fab-pulse-enhanced' : ''}`}
           aria-label="Open contact options"
           aria-expanded={isOpen}
           onClick={toggleFAB}
           style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            backgroundColor: '#198754', // Bootstrap success color
+            background: '#fff',
+            color: '#198754',
+            fontWeight: 600,
+            fontSize: 16,
+            borderRadius: 16,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+            padding: '0.5rem 1.1rem',
+            marginBottom: 4,
+            marginRight: 2,
+            display: 'inline-block',
+            pointerEvents: 'auto',
+            userSelect: 'none',
+            letterSpacing: 0.1,
+            zIndex: 1000,
             border: 'none',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-            transform: isOpen ? 'rotate(45deg)' : 'none'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = isOpen ? 'rotate(45deg)' : 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = isOpen ? 'rotate(45deg)' : 'none';
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            position: 'relative',
+            minWidth: 120,
+            minHeight: 48
           }}
         >
-          <span style={{ fontSize: '24px' }}>❓</span>
+          <span style={{ fontSize: 18, marginRight: 8, verticalAlign: 'middle' }}>💬</span>
+          Live Chat
         </button>
-
         {/* FAB Items Container */}
         <div 
           className="fab-items"
@@ -198,7 +238,30 @@ export default function FABSpeedDial() {
           </button>
         </div>
       </div>
-      {showChat && <div ref={chatRef}><MyChatComponent onClose={() => setShowChat(false)} /></div>}
+      {/* Enhanced Pulse/Bounce animation keyframes */}
+      <style jsx>{`
+        .fab-pulse-enhanced {
+          animation: fabPulseEnhanced 1.3s;
+        }
+        @keyframes fabPulseEnhanced {
+          0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(25,135,84,0.32); }
+          25% { transform: scale(1.18); box-shadow: 0 0 0 16px rgba(25,135,84,0.13); }
+          60% { transform: scale(0.95); box-shadow: 0 0 0 8px rgba(25,135,84,0.09); }
+          100% { transform: scale(1); box-shadow: 0 2px 8px rgba(0,0,0,0.10); }
+        }
+        @keyframes fadeInOut {
+          0% { opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}</style>
+      {/* Chat Modal */}
+      {showChat && (
+        <div ref={chatRef} style={{ position: 'fixed', bottom: 90, right: 24, zIndex: 1001 }}>
+          <MyChatComponent onClose={() => setShowChat(false)} />
+        </div>
+      )}
     </>
   );
 }
