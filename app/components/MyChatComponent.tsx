@@ -342,6 +342,26 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     }
   }, []);
 
+  // Restore chat history from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = window.sessionStorage.getItem('mintChat_messages');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) setMessages(parsed);
+        } catch {}
+      }
+    }
+  }, []);
+
+  // Persist chat history to sessionStorage on every change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem('mintChat_messages', JSON.stringify(messages));
+    }
+  }, [messages]);
+
   // Restore staged flow useEffect(s)
   useEffect(() => {
     // Only run staged flow if no messages yet
@@ -372,7 +392,7 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
           setStagedFollowupDone(true);
         }, 1500);
       }, 4500);
-      // Step 4: Step 3 message (after 10s pause from Step 3)
+      // Step 4: Step 3 message (after 2s pause from Step 3, total 15s from open)
       let step3Timeout = setTimeout(() => {
         setStagedShowStep3Typing(true);
         setTimeout(() => {
@@ -381,7 +401,7 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
           setStagedStep3Done(true);
           playNotificationSound();
         }, 1750);
-      }, 4500 + 10000); // 10s pause after Step 3 topics
+      }, 13000); // 13s (end of Step 3) + 2s = 15s total
       return () => {
         clearTimeout(greetingTimeout);
         clearTimeout(ctaTimeout);
@@ -656,29 +676,6 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
                   })()}</>
                   : msg.content}
                 </span>
-                {/* Feedback buttons for Mint replies except the initial greeting */}
-                {msg.role === "assistant" && i !== 0 && !feedbackGiven[i] && (
-                  <div style={{ marginTop: 6, marginLeft: 32, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
-                    <span style={{ color: '#888', marginRight: 4 }}>Was this helpful?</span>
-                    <button
-                      aria-label="Helpful"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#09b44d', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
-                      onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
-                      onMouseOver={e => (e.currentTarget.style.color = '#0d6b3c')}
-                      onMouseOut={e => (e.currentTarget.style.color = '#09b44d')}
-                    >👍</button>
-                    <button
-                      aria-label="Not helpful"
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: 18, padding: 2, transition: 'color 0.15s' }}
-                      onClick={() => setFeedbackGiven(f => ({ ...f, [i]: true }))}
-                      onMouseOver={e => (e.currentTarget.style.color = '#b00020')}
-                      onMouseOut={e => (e.currentTarget.style.color = '#888')}
-                    >👎</button>
-                  </div>
-                )}
-                {msg.role === "assistant" && i !== 0 && feedbackGiven[i] && (
-                  <div style={{ marginTop: 6, marginLeft: 32, color: '#198754', fontSize: 13.5, fontWeight: 500 }}>Thank you for your feedback!</div>
-                )}
                 {showUpload && !uploading && (
                   <div style={{ marginTop: 10, marginLeft: 32 }}>
                     <label htmlFor="chat-upload-input" style={{
