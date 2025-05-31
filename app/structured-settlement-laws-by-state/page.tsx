@@ -1070,29 +1070,27 @@ export default function StructuredSettlementLawsByState() {
       <main className="container py-5">
         <h1 className="fw-bold text-success mb-4" style={{ fontSize: '2.1rem' }}>Structured Settlement Laws by State</h1>
         <section className="mb-3">
-          <h2 className="h4 mb-2">State-Specific Regulations for Structured Settlement Transfers</h2>
-          <p className="text-muted mb-3">Find your state's structured settlement laws and requirements below.</p>
+          <div className="text-center mb-0">
+            <div className="small text-muted py-2" style={{marginTop: '-0.5rem', paddingTop: 8, paddingBottom: 8}}>Or if you need help, call us:</div>
+            <a
+              href="tel:+19547649750"
+              className="btn btn-success btn-lg fw-semibold w-100 mb-4"
+              style={{ borderRadius: 8, fontSize: '1.13rem', padding: '8px 0', width: '100%', maxWidth: 400, margin: '0 auto 16px auto', display: 'block' }}
+            >
+              Call Now for Assistance
+            </a>
+          </div>
           <input
             type="text"
             className="form-control mb-4"
             placeholder="Type your state name..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ maxWidth: 400, border: '2.5px solid #22b455', boxShadow: '0 1px 6px rgba(34,180,85,0.07)', background: '#fff' }}
+            style={{ maxWidth: 400, border: '2.5px solid #22b455', boxShadow: '0 1px 6px rgba(34,180,85,0.07)', background: '#fff', margin: '0 auto 16px auto', display: 'block' }}
             aria-label="Search for a state"
           />
-          <div className="text-center mb-0">
-            <div className="small text-muted mb-2" style={{marginTop: '-0.5rem'}}>Or if you need help, call us:</div>
-            <a
-              href="tel:+19547649750"
-              className="btn btn-success btn-lg fw-semibold"
-              style={{ borderRadius: 8, fontSize: '1.13rem', padding: '0.7rem 2.2rem' }}
-            >
-              Call Now for Assistance
-            </a>
-          </div>
         </section>
-        <section>
+        <section className="mb-4">
           {Object.keys(grouped).sort().map(letter => (
             <div key={letter} className="mb-4">
               <h3 className="text-success" style={{ fontSize: '1.2rem', marginBottom: 12 }}>{letter}</h3>

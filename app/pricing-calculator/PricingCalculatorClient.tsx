@@ -42,8 +42,8 @@ const PricingCalculator = () => {
 
   return (
     <>
-      <div className="container py-3">
-        <h1 className="mb-4 text-success fw-bold text-center">Early Payout Calculator</h1>
+      <div className="container py-3 pricing-calc-container">
+        {/* <h1 className="mb-4 text-success fw-bold text-center">Early Payout Calculator</h1> */}
         {/* SEO-Optimized Intro Paragraph (visually hidden, crawlable) */}
         <div className="seo-only mb-4">
           <strong>SmarterPayouts</strong> is proud to offer the industry's only real-time <strong>structured settlement calculator</strong>. Unlike competitors, our calculator provides instant, personalized <strong>structured settlement lump sum estimates</strong> based on real data — no guessing, no gimmicks. Whether you're comparing with <strong>JG Wentworth</strong>, <strong>DRB Financial</strong>, or any other buyer, see your true lump-sum payout value today — fast, accurate, and free. Try the only <strong>real structured settlement payout calculator</strong> and <strong>compare JG Wentworth calculator</strong> results instantly.
@@ -56,8 +56,18 @@ const PricingCalculator = () => {
             height: 1px !important;
             overflow: hidden !important;
           }
+          .pricing-calc-stepper {
+            margin-top: -1.2rem;
+            margin-bottom: 1.2rem;
+          }
+          @media (max-width: 600px) {
+            .pricing-calc-stepper {
+              margin-top: -2.2rem;
+              margin-bottom: 1.1rem;
+            }
+          }
         `}</style>
-        <div className="text-center mb-2">Step {step} of 3</div>
+        <div className="text-center mb-2 pricing-calc-stepper">Step {step} of 3</div>
         {step === 1 && (
           <Step1PaymentDetails
             onNext={() => goToStep(formData.paymentType === 'Life Contingent' ? 2 : 3)}

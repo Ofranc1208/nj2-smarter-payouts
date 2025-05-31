@@ -212,22 +212,45 @@ export default function Contact() {
             <div className="col-md-5">
               <div className="p-4 bg-white rounded shadow-sm blog-article-enhanced h-100" style={{ padding: '2rem 1.5rem', minWidth: 0 }}>
                 <h4 className="fw-bold mb-4" style={{ fontSize: '1.25rem', letterSpacing: '-0.5px' }}>SmarterPayouts</h4>
-                <div className="mb-3 d-flex align-items-center" style={{ gap: 12 }}>
+                <div className="mb-3 d-flex align-items-center contact-row" style={{ gap: 12 }}>
                   <span className="d-flex align-items-center justify-content-center" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Email" role="img">📧</span>
                   <span style={{ fontWeight: 600, minWidth: 70 }}>Email:</span>
-                  <span style={{ fontWeight: 400, fontSize: '1.04rem', wordBreak: 'break-all' }}>info@smarterpayouts.com</span>
+                  <a
+                    href="mailto:info@smarterpayouts.com"
+                    style={{
+                      fontWeight: 400,
+                      fontSize: '1.04rem',
+                      color: '#198754',
+                      textDecoration: 'underline',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      WebkitHyphens: 'auto',
+                      hyphens: 'auto',
+                      lineHeight: 1.3,
+                      display: 'inline-block',
+                      maxWidth: '100%'
+                    }}
+                    className="contact-email-link"
+                  >
+                    info@smarterpayouts.com
+                  </a>
                 </div>
-                <div className="mb-3 d-flex align-items-center" style={{ gap: 12 }}>
+                <div className="mb-3 d-flex align-items-center contact-row" style={{ gap: 12 }}>
                   <span className="d-flex align-items-center justify-content-center" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Phone" role="img">📞</span>
                   <span style={{ fontWeight: 600, minWidth: 70 }}>Phone:</span>
-                  <span style={{ fontWeight: 400, fontSize: '1.04rem' }}>(954) 764-9750</span>
+                  <a
+                    href="tel:+19547649750"
+                    style={{ fontWeight: 400, fontSize: '1.04rem', color: '#198754', textDecoration: 'underline' }}
+                  >
+                    (954) 764-9750
+                  </a>
                 </div>
-                <div className="mb-3 d-flex align-items-center" style={{ gap: 12 }}>
+                <div className="mb-3 d-flex align-items-center contact-row" style={{ gap: 12 }}>
                   <span className="d-flex align-items-center justify-content-center" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Hours" role="img">⏰</span>
                   <span style={{ fontWeight: 600, minWidth: 70 }}>Hours:</span>
                   <span style={{ fontWeight: 400, fontSize: '1.04rem' }}>Mon–Fri, 9am – 6pm EST</span>
                 </div>
-                <div className="mb-4 d-flex align-items-start" style={{ gap: 12 }}>
+                <div className="mb-4 d-flex align-items-start contact-row" style={{ gap: 12 }}>
                   <span className="d-flex align-items-center justify-content-center mt-1" style={{ fontSize: '1.15rem', width: 28 }} aria-label="Address" role="img">📍</span>
                   <div>
                     <span style={{ fontWeight: 600 }}>Address:</span>
@@ -244,6 +267,27 @@ export default function Contact() {
                   title="SmarterPayouts Location"
                   aria-label="Map showing SmarterPayouts location in Boca Raton, FL"
                 ></iframe>
+                <style jsx>{`
+                  .contact-row {
+                    margin-bottom: 1.1rem !important;
+                  }
+                  .contact-email-link {
+                    word-break: break-word;
+                    overflow-wrap: anywhere;
+                    hyphens: auto;
+                  }
+                  @media (max-width: 600px) {
+                    .contact-row {
+                      flex-direction: column !important;
+                      align-items: flex-start !important;
+                      gap: 4px !important;
+                    }
+                    .contact-email-link {
+                      font-size: 1.01rem;
+                      max-width: 100%;
+                    }
+                  }
+                `}</style>
               </div>
             </div>
           </div>
