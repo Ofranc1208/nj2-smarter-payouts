@@ -35,7 +35,9 @@ const PricingCalculator = () => {
         setCalculationResult(parsed);
         setStep(3);
       } catch (err) {
-        console.error('Failed to parse calculation result from query params:', err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to parse calculation result from query params:', err);
+        }
       }
     }
   }, [searchParams]);

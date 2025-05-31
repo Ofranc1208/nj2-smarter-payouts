@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import Image from 'next/image';
 
 export default function Home() {
   const [url, setUrl] = useState('');
@@ -149,10 +150,10 @@ export default function Home() {
           <source src="/assets/videos/promos/counting-cash.webm" type="video/webm" />
           Your browser does not support the video tag.
         </video>
-        {/*
+        {/**
         <video autoPlay muted loop playsInline preload="metadata" id="bg-video" poster="/assets/images/fallback.jpg">
           <source src="/assets/videos/promos/counting-cash.mp4" type="video/mp4" />
-          <img src="/assets/images/fallback.jpg" alt="Structured Settlement Video Preview" />
+          <Image src="/assets/images/fallback.jpg" alt="Structured Settlement Video Preview" width={1920} height={1080} priority />
         </video>
         */}
 

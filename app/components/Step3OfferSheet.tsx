@@ -28,8 +28,9 @@ function formatPhoneNumber(value: string) {
 
 // Placeholder for email sending
 function sendEmail(phone: string, offerCode: string) {
-  // Implement with EmailJS, Firebase Functions, etc.
-  console.log('Send email to oscar.francis1225@gmail.com:', phone, offerCode);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Send email to oscar.francis1225@gmail.com:', phone, offerCode);
+  }
 }
 
 export default function Step3OfferSheet({ calculationResult, formData, onBack }: { calculationResult: any, formData: any, onBack?: () => void }) {
@@ -97,7 +98,9 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
         ...extraData
       });
     } catch (err) {
-      console.error('Firestore write failed:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Firestore write failed:', err);
+      }
       // Do not block UI or crash
     }
     sendEmail(fullPhone, offerCode);

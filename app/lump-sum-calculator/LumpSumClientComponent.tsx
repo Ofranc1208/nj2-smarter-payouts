@@ -49,30 +49,15 @@ const LumpSumCalculatorPage = () => {
     const pvDate = presentValueDate ? new Date(presentValueDate) : new Date();
     pvDate.setHours(0, 0, 0, 0);
 
-    console.log('Lump Sum Calculation Inputs (calculateLumpSumNPV):', {
-      amount,
-      lumpSumDate,
-      annualRate,
-      presentValueDate: pvDate,
-    });
-
     const lumpDate = new Date(lumpSumDate);
     lumpDate.setHours(0, 0, 0, 0);
-
-    console.log('Lump Sum Dates (calculateLumpSumNPV):', {
-      lumpDate: lumpDate.getTime(),
-      pvDate: pvDate.getTime(),
-    });
 
     const yearsDiff = lumpDate.getFullYear() - pvDate.getFullYear();
     const monthsDiff = lumpDate.getMonth() - pvDate.getMonth();
     const daysDiff = lumpDate.getDate() - pvDate.getDate();
     const monthsFromPVDate = yearsDiff * 12 + monthsDiff + daysDiff / 30.44;
 
-    console.log('Months from Present Value Date (calculateLumpSumNPV):', monthsFromPVDate);
-
     if (monthsFromPVDate < 0) {
-      console.log('Lump sum date is before present value date (calculateLumpSumNPV).');
       return { npv: parseFloat(amount.toString()), payments: 0 };
     }
 
@@ -135,7 +120,9 @@ const LumpSumCalculatorPage = () => {
     });
 
     if (Object.keys(currentErrors).length > 0) {
-      console.error('Validation Errors:', currentErrors);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Validation Errors:', currentErrors);
+      }
       setError('Please fix the errors in the form.');
       setErrors(currentErrors);
       return;
@@ -154,12 +141,16 @@ const LumpSumCalculatorPage = () => {
         maxOffer: roundUp100(Math.max(0, totalMax - AMOUNT_ADJUSTMENTS.max)),
       };
 
-      console.log('Lump Sum Calculation Result (to pass):', result);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Lump Sum Calculation Result (to pass):', result);
+      }
 
       const encoded = encodeURIComponent(JSON.stringify(result));
       router.push(`/pricing-calculator?result=${encoded}`);
     } catch (err) {
-      console.error('Lump Sum Calculation Error:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Lump Sum Calculation Error:', err);
+      }
       setError('An error occurred during calculation.');
     }
   };

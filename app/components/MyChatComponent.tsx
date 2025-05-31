@@ -106,8 +106,9 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
           status: "new"
         });
       } catch (err) {
-        // Fail silently, do not block chat
-        console.error("Failed to log associate request:", err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("Failed to log associate request:", err);
+        }
       }
     }
   }

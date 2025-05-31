@@ -2,6 +2,7 @@
 import React from 'react';
 import './testimonials.css';
 import Head from 'next/head';
+import Image from 'next/image';
 
 const testimonials = [
   {
@@ -169,13 +170,13 @@ export default function TestimonialsPage() {
               style={{ minWidth: 320, maxWidth: 400, flex: '0 0 auto', margin: '0 auto' }}
               tabIndex={0}
             >
-              <img
+              <Image
                 src={t.img}
                 alt={t.alt}
                 className="testimonial-profile"
                 width={64}
                 height={64}
-                loading="lazy"
+                priority={i === 0}
                 style={{ marginBottom: '0.7rem' }}
               />
               <div className="testimonial-stars" aria-label="5 star rating">
@@ -197,7 +198,7 @@ export default function TestimonialsPage() {
           {verticalTestimonials.map((t, i) => (
             <div key={t.name} className="vertical-testimonial-card">
               {i === 0 && (
-                <img
+                <Image
                   src="https://randomuser.me/api/portraits/women/65.jpg"
                   alt={`Profile photo of ${t.name}`}
                   className="vertical-testimonial-profile"
@@ -207,7 +208,7 @@ export default function TestimonialsPage() {
                 />
               )}
               {i === 1 && (
-                <img
+                <Image
                   src="https://randomuser.me/api/portraits/men/33.jpg"
                   alt={`Profile photo of ${t.name}`}
                   className="vertical-testimonial-profile"
@@ -217,7 +218,7 @@ export default function TestimonialsPage() {
                 />
               )}
               {i === 2 && (
-                <img
+                <Image
                   src="https://randomuser.me/api/portraits/women/68.jpg"
                   alt={`Profile photo of ${t.name}`}
                   className="vertical-testimonial-profile"

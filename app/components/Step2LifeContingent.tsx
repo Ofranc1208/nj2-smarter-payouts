@@ -160,7 +160,9 @@ export default function Step2LifeContingent({
 
       onNext();
     } catch (err) {
-      console.error('❌ Calculation error:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Calculation error:', err);
+      }
       alert('An error occurred while calculating. Please check your inputs.');
     }
   };

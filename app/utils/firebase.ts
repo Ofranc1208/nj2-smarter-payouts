@@ -22,7 +22,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-console.log('🔥 Firebase initialized');
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔥 Firebase initialized');
+}
 
 export { auth, db, storage, RecaptchaVerifier }; 
 // Triggering redeploy
