@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Link from 'next/link';
 
 export const metadata = {
@@ -9,7 +8,7 @@ export const metadata = {
     description: 'Clear definitions of key structured settlement terms. Learn the language of settlements, court approval, annuities, and more.',
     type: 'article',
     url: 'https://smarterpayouts.com/structured-settlement-info-hub/glossary-of-structured-settlement-terms',
-  }
+  },
 };
 
 export default function GlossaryStructuredSettlementTerms() {
@@ -57,7 +56,7 @@ export default function GlossaryStructuredSettlementTerms() {
     },
     {
       term: 'Court Approval',
-      definition: 'A legal process required to sell or transfer structured settlement payments. A judge reviews the sale to ensure it is in the seller's best interest.'
+      definition: 'A legal process required to sell or transfer structured settlement payments. A judge reviews the sale to ensure it is in the seller\'s best interest.'
     },
     {
       term: 'Discount Rate',
@@ -65,7 +64,7 @@ export default function GlossaryStructuredSettlementTerms() {
     },
     {
       term: 'Independent Advisor',
-      definition: 'A court-appointed professional who reviews the sale of a structured settlement to ensure it is fair and in the seller's best interest.'
+      definition: 'A court-appointed professional who reviews the sale of a structured settlement to ensure it is fair and in the seller\'s best interest.'
     },
     {
       term: 'Lump Sum',
@@ -107,12 +106,11 @@ export default function GlossaryStructuredSettlementTerms() {
 
   return (
     <>
-      <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      </Head>
+      {/* FAQ Schema for AI SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       <main className="container py-5">
         {/* Hero Section */}

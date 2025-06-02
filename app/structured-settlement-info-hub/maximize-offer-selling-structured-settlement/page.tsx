@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Link from 'next/link';
 
 export const metadata = {
@@ -51,7 +50,7 @@ export default function MaximizeOfferSellingStructuredSettlement() {
   const strategies = [
     {
       title: 'Get Multiple Quotes',
-      content: 'Compare offers from several reputable buyers to ensure you get the best deal. Don't settle for the first offer you receive.'
+      content: 'Compare offers from several reputable buyers to ensure you get the best deal. Don\'t settle for the first offer you receive.'
     },
     {
       title: 'Improve Your Credit',
@@ -63,7 +62,7 @@ export default function MaximizeOfferSellingStructuredSettlement() {
     },
     {
       title: 'Negotiate the Offer',
-      content: 'Don't be afraid to negotiate. Ask for better terms, lower fees, or a higher lump sum.'
+      content: 'Don\'t be afraid to negotiate. Ask for better terms, lower fees, or a higher lump sum.'
     },
     {
       title: 'Understand All Fees',
@@ -71,7 +70,7 @@ export default function MaximizeOfferSellingStructuredSettlement() {
     },
     {
       title: 'Avoid Common Pitfalls',
-      content: 'Read the fine print, avoid high-pressure tactics, and don't sell more payments than necessary.'
+      content: 'Read the fine print, avoid high-pressure tactics, and don\'t sell more payments than necessary.'
     },
     {
       title: 'Consult a Professional',
@@ -85,13 +84,11 @@ export default function MaximizeOfferSellingStructuredSettlement() {
 
   return (
     <>
-      <Head>
-        <link rel="canonical" href="https://smarterpayouts.com/structured-settlement-info-hub/maximize-offer-selling-structured-settlement" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      </Head>
+      {/* FAQ Schema for AI SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       <main className="container py-5">
         {/* Hero Section */}
