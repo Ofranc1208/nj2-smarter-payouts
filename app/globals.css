@@ -132,7 +132,7 @@ h1, h2, h3, h4, h5 {
 }
 .cta-button.primary {
   background: #09b44d;
-  color: #fff;
+  color: #111 !important;
 }
 .cta-button.secondary {
   background: #fbc233;
@@ -141,6 +141,10 @@ h1, h2, h3, h4, h5 {
 .cta-button:hover {
   opacity: 0.92;
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.btn-success, .btn-primary {
+  color: #111 !important;
 }
 
 /* === TESTIMONIALS === */

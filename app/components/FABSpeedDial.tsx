@@ -137,183 +137,183 @@ export default function FABSpeedDial() {
 
       {/* --- Chat Button (shows only after toast disappears) --- */}
       {showChatButton && (
-        <div
-          ref={fabRef}
-          className={`fab-speed-dial ${isOpen ? 'open' : ''}`}
+      <div
+        ref={fabRef}
+        className={`fab-speed-dial ${isOpen ? 'open' : ''}`}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column-reverse',
+          alignItems: 'flex-end',
+          gap: '16px',
+          maxWidth: 'calc(100vw - 16px)'
+        }}
+      >
+        {/* Tooltip on first load */}
+        {showTooltip && (
+          <div style={{
+            position: 'absolute',
+            bottom: '70px',
+            right: 0,
+            background: '#fff',
+            color: '#222',
+            borderRadius: 8,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.13)',
+            padding: '0.7rem 1.1rem',
+            fontSize: 15,
+            fontWeight: 500,
+            zIndex: 1001,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            animation: 'fadeInOut 3s linear'
+          }}>
+            <span role="img" aria-label="wave">👋</span> Need help? Click here to chat!
+          </div>
+        )}
+        {/* Main White Questions Button (chat trigger) */}
+        <button
+          className={`fab-main fab-questions${pulse ? ' fab-pulse-enhanced' : ''}`}
+          aria-label="Open contact options"
+          aria-expanded={isOpen}
+          onClick={toggleFAB}
           style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
+            background: '#fff',
+            color: '#198754',
+            fontWeight: 600,
+            fontSize: 16,
+            borderRadius: 16,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+            padding: '0.5rem 1.1rem',
+            marginBottom: 4,
+            marginRight: 2,
+            display: 'inline-block',
+            pointerEvents: 'auto',
+            userSelect: 'none',
+            letterSpacing: 0.1,
             zIndex: 1000,
-            display: 'flex',
-            flexDirection: 'column-reverse',
-            alignItems: 'flex-end',
-            gap: '16px',
-            maxWidth: 'calc(100vw - 16px)'
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            position: 'relative',
+            minWidth: 120,
+            minHeight: 48
           }}
         >
-          {/* Tooltip on first load */}
-          {showTooltip && (
-            <div style={{
-              position: 'absolute',
-              bottom: '70px',
-              right: 0,
-              background: '#fff',
-              color: '#222',
-              borderRadius: 8,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.13)',
-              padding: '0.7rem 1.1rem',
-              fontSize: 15,
-              fontWeight: 500,
-              zIndex: 1001,
-              whiteSpace: 'nowrap',
-              pointerEvents: 'none',
-              animation: 'fadeInOut 3s linear'
-            }}>
-              <span role="img" aria-label="wave">👋</span> Need help? Click here to chat!
-            </div>
-          )}
-          {/* Main White Questions Button (chat trigger) */}
-          <button
-            className={`fab-main fab-questions${pulse ? ' fab-pulse-enhanced' : ''}`}
-            aria-label="Open contact options"
-            aria-expanded={isOpen}
-            onClick={toggleFAB}
-            style={{
-              background: '#fff',
-              color: '#198754',
-              fontWeight: 600,
-              fontSize: 16,
-              borderRadius: 16,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-              padding: '0.5rem 1.1rem',
-              marginBottom: 4,
-              marginRight: 2,
-              display: 'inline-block',
-              pointerEvents: 'auto',
-              userSelect: 'none',
-              letterSpacing: 0.1,
-              zIndex: 1000,
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              position: 'relative',
-              minWidth: 120,
-              minHeight: 48
-            }}
-          >
-            <span style={{ fontSize: 18, marginRight: 8, verticalAlign: 'middle' }}>💬</span>
-            Live Chat
-          </button>
-          {/* FAB Items Container */}
-          <div 
-            className="fab-items"
+          <span style={{ fontSize: 18, marginRight: 8, verticalAlign: 'middle' }}>💬</span>
+          Live Chat
+        </button>
+        {/* FAB Items Container */}
+        <div 
+          className="fab-items"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            opacity: isOpen ? 1 : 0,
+            transform: isOpen ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.2s ease, transform 0.2s ease',
+            pointerEvents: isOpen ? 'auto' : 'none',
+            marginBottom: '8px'
+          }}
+        >
+          {/* Call Option */}
+          <a 
+            href="tel:+19547649750" 
+            className="fab-item fab-call" 
+            aria-label="Call Us"
             style={{
               display: 'flex',
-              flexDirection: 'column',
+              alignItems: 'center',
               gap: '12px',
-              opacity: isOpen ? 1 : 0,
-              transform: isOpen ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 0.2s ease, transform 0.2s ease',
-              pointerEvents: isOpen ? 'auto' : 'none',
-              marginBottom: '8px'
+              backgroundColor: 'white',
+              padding: '12px 16px',
+              borderRadius: '28px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              textDecoration: 'none',
+              color: '#333',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              width: 'fit-content'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(-4px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
             }}
           >
-            {/* Call Option */}
-            <a 
-              href="tel:+19547649750" 
-              className="fab-item fab-call" 
-              aria-label="Call Us"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                backgroundColor: 'white',
-                padding: '12px 16px',
-                borderRadius: '28px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                textDecoration: 'none',
-                color: '#333',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                width: 'fit-content'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateX(-4px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>📞</span>
-              <span style={{ fontSize: '14px', fontWeight: 500 }}>Call Us</span>
-            </a>
+            <span style={{ fontSize: '20px' }}>📞</span>
+            <span style={{ fontSize: '14px', fontWeight: 500 }}>Call Us</span>
+          </a>
 
-            {/* Email Option */}
-            <a 
-              href="/contact" 
-              className="fab-item fab-contact" 
-              aria-label="Email Us"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                backgroundColor: 'white',
-                padding: '12px 16px',
-                borderRadius: '28px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                textDecoration: 'none',
-                color: '#333',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                width: 'fit-content'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateX(-4px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>✉️</span>
-              <span style={{ fontSize: '14px', fontWeight: 500 }}>Email Us</span>
-            </a>
+          {/* Email Option */}
+          <a 
+            href="/contact" 
+            className="fab-item fab-contact" 
+            aria-label="Email Us"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              backgroundColor: 'white',
+              padding: '12px 16px',
+              borderRadius: '28px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              textDecoration: 'none',
+              color: '#333',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              width: 'fit-content'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(-4px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            }}
+          >
+            <span style={{ fontSize: '20px' }}>✉️</span>
+            <span style={{ fontSize: '14px', fontWeight: 500 }}>Email Us</span>
+          </a>
 
-            {/* Chat Option */}
-            <button 
-              onClick={openChatFunction} 
-              className="fab-item fab-chat" 
-              aria-label="Chat Now"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                backgroundColor: 'white',
-                padding: '12px 16px',
-                borderRadius: '28px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#333',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                width: 'fit-content'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateX(-4px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>💬</span>
-              <span style={{ fontSize: '14px', fontWeight: 500 }}>Let's Chat</span>
-            </button>
-          </div>
+          {/* Chat Option */}
+          <button 
+            onClick={openChatFunction} 
+            className="fab-item fab-chat" 
+            aria-label="Chat Now"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              backgroundColor: 'white',
+              padding: '12px 16px',
+              borderRadius: '28px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#333',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              width: 'fit-content'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(-4px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            }}
+          >
+            <span style={{ fontSize: '20px' }}>💬</span>
+            <span style={{ fontSize: '14px', fontWeight: 500 }}>Let's Chat</span>
+          </button>
         </div>
+      </div>
       )}
       {/* --- End Chat Button --- */}
       {/* Enhanced Pulse/Bounce animation keyframes */}

@@ -4,9 +4,11 @@ import InternalLinks from '../components/InternalLinks';
 import ValueProps from '../components/ValueProps';
 import Stats from '../components/Stats';
 import CallToAction from '../components/CallToAction';
-import FABSpeedDial from '../components/FABSpeedDial';
 import Footer from '../components/Footer';
 import MainClientContent from './MainClientContent';
+import dynamic from 'next/dynamic';
+
+const LazyFABSpeedDial = dynamic(() => import('../components/FABSpeedDial'), { ssr: false });
 
 export default function Main() {
   return (
@@ -17,7 +19,7 @@ export default function Main() {
       <ValueProps />
       <MainClientContent />
       <CallToAction />
-      <FABSpeedDial />
+      <LazyFABSpeedDial />
     </>
   );
 } 

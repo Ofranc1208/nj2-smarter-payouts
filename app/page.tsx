@@ -164,9 +164,9 @@ export default function Home() {
             Skip the Sales Pitch
           </h1>
           <p></p>
-          <h4 className="lead fs-4 fw-semibold text-light mt-3">
+          <h2 className="lead fs-4 fw-semibold text-light mt-3">
           Discover your settlement's early payout value today.
-          </h4>
+          </h2>
           <p></p>
           <p className="fs-5 text-light">
           No personal info needed to see your quote.

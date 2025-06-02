@@ -6,11 +6,13 @@ import '../styles/Index.css'
 import Script from 'next/script'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import FABSpeedDial from './components/FABSpeedDial'
+import dynamic from 'next/dynamic'
 import { ReactNode } from 'react'
 import ClientNavbarWrapper from './components/ClientNavbarWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
+
+const LazyFABSpeedDial = dynamic(() => import('./components/FABSpeedDial'), { ssr: false })
 
 export const metadata: Metadata = {
   title: 'Structured Settlement Calculator',
@@ -25,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
@@ -48,7 +50,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <FABSpeedDial />
+        <LazyFABSpeedDial />
         <Script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
           strategy="afterInteractive"
