@@ -212,13 +212,13 @@ export default function MaximizeOfferSellingStructuredSettlement() {
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link href="/structured-settlement-info-hub/court-approval-process" className="text-decoration-none">
-                      Court Approval Process
+                    <Link href="/structured-settlement-info-hub/pros-cons-selling-structured-settlement" className="text-decoration-none">
+                      Pros & Cons of Selling
                     </Link>
                   </li>
                   <li>
-                    <Link href="/structured-settlement-info-hub/state-laws" className="text-decoration-none">
-                      State-by-State Laws
+                    <Link href="/structured-settlement-info-hub/common-mistakes-selling-structured-settlement" className="text-decoration-none">
+                      Common Mistakes to Avoid
                     </Link>
                   </li>
                 </ul>

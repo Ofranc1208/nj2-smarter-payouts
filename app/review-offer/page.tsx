@@ -2,16 +2,10 @@
 
 import Link from 'next/link';
 import Footer from '../components/Footer';
-import Head from 'next/head';
 
 export default function ReviewOffer() {
   return (
     <>
-      <Head>
-        <title>100% Private & Secure | SmarterPayouts Structured Settlements</title>
-        <meta name="description" content="Your privacy is our priority. Get a quote for your structured settlement with no personal information required. 100% secure, confidential, and digital process." />
-        <meta name="keywords" content="privacy, no personal info, secure, confidential, digital process, structured settlement, SmarterPayouts" />
-      </Head>
       {/* HERO SECTION */}
       <section className="how-fast-hero p-4 rounded mb-4 d-flex align-items-center justify-content-center" style={{
         background: "linear-gradient(90deg, #e9f9f1 60%, #fbc23322 100%)",

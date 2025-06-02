@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Link from 'next/link';
 
 export const metadata = {
@@ -50,13 +49,10 @@ export default function ProsConsSellingStructuredSettlement() {
 
   return (
     <>
-      <Head>
-        <link rel="canonical" href="https://smarterpayouts.com/structured-settlement-info-hub/pros-cons-selling-structured-settlement" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      </Head>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       <main className="container py-5">
         {/* Hero Section */}
@@ -245,13 +241,13 @@ export default function ProsConsSellingStructuredSettlement() {
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link href="/structured-settlement-info-hub/court-approval-process" className="text-decoration-none">
-                      Court Approval Process
+                    <Link href="/structured-settlement-info-hub/maximize-offer-selling-structured-settlement" className="text-decoration-none">
+                      How to Maximize Your Offer
                     </Link>
                   </li>
                   <li>
-                    <Link href="/structured-settlement-info-hub/glossary-of-structured-settlement-terms" className="text-decoration-none">
-                      Glossary of Terms
+                    <Link href="/structured-settlement-info-hub/common-mistakes-selling-structured-settlement" className="text-decoration-none">
+                      Common Mistakes to Avoid
                     </Link>
                   </li>
                 </ul>

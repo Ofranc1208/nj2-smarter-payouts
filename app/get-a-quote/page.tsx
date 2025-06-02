@@ -1,27 +1,8 @@
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function GetAQuote() {
   return (
     <>
-      <Head>
-        <title>Instant Quotes for Structured Settlements | SmarterPayouts</title>
-        <meta
-          name="description"
-          content="Get an instant, no-obligation quote for your structured settlement. Use our online calculator or talk to an expert—no personal info required. Fast, private, and secure."
-        />
-        <meta
-          name="keywords"
-          content="instant quote, structured settlement, online calculator, no personal info, fast payout, cash offer, SmarterPayouts"
-        />
-        <meta property="og:title" content="Instant Quotes for Structured Settlements | SmarterPayouts" />
-        <meta
-          property="og:description"
-          content="Get an instant, no-obligation quote for your structured settlement. Use our online calculator or talk to an expert—no personal info required. Fast, private, and secure."
-        />
-        <meta property="og:type" content="website" />
-      </Head>
-
       {/* HERO SECTION */}
       <section className="how-fast-hero p-4 rounded mb-4 d-flex align-items-center justify-content-center" style={{
         background: "linear-gradient(90deg, #e9f9f1 60%, #fbc23322 100%)",

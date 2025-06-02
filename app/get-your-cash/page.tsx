@@ -1,26 +1,8 @@
-import Head from 'next/head';
 import Link from 'next/link';
 
 export default function GetYourCash() {
   return (
     <>
-      <Head>
-        <title>Get Your Cash | SmarterPayouts - Structured Settlement Experts</title>
-        <meta
-          name="description"
-          content="Get your structured settlement cash fast and your way. SmarterPayouts offers direct deposit, check, or in-person delivery—no delays, no hidden fees."
-        />
-        <meta
-          name="keywords"
-          content="structured settlement, get cash, payout, direct deposit, check, fast payment, instant payout"
-        />
-        <meta property="og:title" content="Get Your Cash | SmarterPayouts" />
-        <meta
-          property="og:description"
-          content="Get your structured settlement cash fast and your way. SmarterPayouts offers direct deposit, check, or in-person delivery—no delays, no hidden fees."
-        />
-        <meta property="og:type" content="website" />
-      </Head>
       {/* HERO SECTION */}
       <section className="how-fast-hero p-4 rounded mb-4 d-flex align-items-center justify-content-center" style={{
         background: "linear-gradient(90deg, #e9f9f1 60%, #fbc23322 100%)",

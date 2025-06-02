@@ -1,17 +1,8 @@
 import Link from 'next/link';
-import Head from 'next/head';
 
 export default function Articles() {
   return (
     <>
-      <Head>
-        <title>Structured Settlement Resources & Articles | SmarterPayouts</title>
-        <meta name="description" content="Expert advice, financial insights, and structured settlement tips from SmarterPayouts. Learn about selling, court approval, and getting your cash fast." />
-        <meta name="keywords" content="structured settlement, articles, resources, blog, financial tips, payout" />
-        <meta property="og:title" content="Structured Settlement Resources & Articles | SmarterPayouts" />
-        <meta property="og:description" content="Expert advice, financial insights, and structured settlement tips from SmarterPayouts. Learn about selling, court approval, and getting your cash fast." />
-        <meta property="og:type" content="website" />
-      </Head>
       {/* HERO SECTION */}
       <section className="how-fast-hero p-4 rounded mb-4 d-flex align-items-center justify-content-center" style={{
         background: "linear-gradient(90deg, #e9f9f1 60%, #fbc23322 100%)",

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Head from 'next/head';
 
 export default function About() {
   const [url, setUrl] = useState('');
@@ -15,85 +14,6 @@ export default function About() {
 
   return (
     <>
-      <Head>
-        <title>About Us | SmarterPayouts - Structured Settlement Experts</title>
-        <meta
-          name="description"
-          content="SmarterPayouts is a leading structured settlement company offering instant online quotes, transparent pricing, and a 100% digital process. No cold calls, no hidden fees, just smarter payouts."
-        />
-        <meta
-          name="keywords"
-          content="structured settlement, sell settlement, settlement company, cash for settlement, instant quote, transparent pricing"
-        />
-        <meta property="og:title" content="About SmarterPayouts - Structured Settlement Experts" />
-        <meta
-          property="og:description"
-          content="SmarterPayouts is changing the game in structured settlements with instant online quotes, digital workflows, and no pushy sales calls."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={url} />
-        <meta property="og:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Us | SmarterPayouts - Structured Settlement Experts" />
-        <meta name="twitter:description" content="SmarterPayouts is a leading structured settlement company offering instant online quotes, transparent pricing, and a 100% digital process. No cold calls, no hidden fees, just smarter payouts." />
-        <meta name="twitter:site" content="@SmarterPayouts" />
-        <meta name="twitter:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
-
-        {/* JSON-LD Organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "SmarterPayouts",
-              "url": "https://smarterpayouts.com",
-              "logo": "https://smarterpayouts.com/assets/images/logo.png",
-              "contactPoint": [
-                {
-                  "@type": "ContactPoint",
-                  "telephone": "+1-954-764-9750",
-                  "contactType": "customer service",
-                  "areaServed": "US",
-                  "availableLanguage": "English"
-                }
-              ],
-              "sameAs": [
-                "https://www.bbb.org/",
-                "https://search.sunbiz.org/Inquiry/CorporationSearch/ByName"
-              ]
-            })
-          }}
-        />
-
-        {/* JSON-LD Breadcrumb */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                  "name": "Home",
-                  "item": "https://smarterpayouts.com/"
-                },
-                {
-                  "@type": "ListItem",
-                  "position": 2,
-                  "name": "About",
-                  "item": "https://smarterpayouts.com/about"
-                }
-              ]
-            })
-          }}
-        />
-      </Head>
       {/* HERO SECTION */}
       <section className="how-fast-hero p-4 rounded mb-4 d-flex align-items-center justify-content-center" style={{
         background: "linear-gradient(90deg, #e9f9f1 60%, #fbc23322 100%)",

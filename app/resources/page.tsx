@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import Head from 'next/head';
 
 interface Company {
   name: string;
@@ -406,71 +405,6 @@ export default function ResourcesPage() {
 
   return (
     <>
-      <Head>
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Helpful Links – Structured Settlement Resources | SmarterPayouts" />
-        <meta name="twitter:description" content="Find useful links and resources for structured settlement recipients and sellers, curated by SmarterPayouts." />
-        <meta name="twitter:site" content="@SmarterPayouts" />
-        <meta name="twitter:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
-
-        {/* Open Graph */}
-        <meta property="og:image" content="https://smarterpayouts.com/assets/images/social-preview.jpg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-
-        {/* JSON-LD Organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "SmarterPayouts",
-              "url": "https://smarterpayouts.com",
-              "logo": "https://smarterpayouts.com/assets/images/logo.png",
-              "contactPoint": [
-                {
-                  "@type": "ContactPoint",
-                  "telephone": "+1-954-764-9750",
-                  "contactType": "customer service",
-                  "areaServed": "US",
-                  "availableLanguage": "English"
-                }
-              ],
-              "sameAs": [
-                "https://www.bbb.org/",
-                "https://search.sunbiz.org/Inquiry/CorporationSearch/ByName"
-              ]
-            })
-          }}
-        />
-
-        {/* JSON-LD Breadcrumb */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                  "name": "Home",
-                  "item": "https://smarterpayouts.com/"
-                },
-                {
-                  "@type": "ListItem",
-                  "position": 2,
-                  "name": "Resources",
-                  "item": "https://smarterpayouts.com/resources"
-                }
-              ]
-            })
-          }}
-        />
-      </Head>
       <section className="py-5" style={{ background: '#f8fafc', minHeight: '100vh' }}>
         <div className="container" style={{ maxWidth: 700 }}>
           <section className="how-fast-hero p-4 rounded mb-4 d-flex flex-column align-items-center justify-content-center shadow-sm" style={{

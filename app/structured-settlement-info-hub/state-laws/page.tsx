@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Link from 'next/link';
 
 export const metadata = {
@@ -110,13 +109,10 @@ export default function StateLaws() {
 
   return (
     <>
-      <Head>
-        <link rel="canonical" href="https://smarterpayouts.com/structured-settlement-info-hub/state-laws" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      </Head>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       <main className="container py-5">
         {/* Hero Section */}
