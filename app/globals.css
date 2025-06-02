@@ -444,3 +444,9 @@ h2, .fw-bold {
     padding-left: 0.7rem;
   }
 }
+
+body.chat-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}

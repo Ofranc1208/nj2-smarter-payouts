@@ -59,6 +59,14 @@ export default function FABSpeedDial() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (showChat) {
+      document.body.classList.add("chat-open");
+    } else {
+      document.body.classList.remove("chat-open");
+    }
+  }, [showChat]);
+
   return (
     <>
       <div
