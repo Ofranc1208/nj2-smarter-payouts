@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { calculateMinMaxNPV } from '../utils/npvCalculations';
 import { AMOUNT_ADJUSTMENTS } from '../utils/npvConfig';
-import { db } from '../utils/firebase';
+import { loadFirebase } from '../utils/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import styles from './OfferConfirmation.module.css';
 
@@ -91,6 +91,7 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
     }
     // Save to Firestore
     try {
+      const { db } = await loadFirebase();
       await addDoc(collection(db, "offer_submissions"), {
         phone: cleaned,
         offerCode,

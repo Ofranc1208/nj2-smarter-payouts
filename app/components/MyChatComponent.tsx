@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { db, storage } from "../utils/firebase";
+import { loadFirebase } from "../utils/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { format } from 'date-fns';
@@ -73,6 +73,16 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     return null;
   }
 
+  // Add after useState declarations:
+  const firebaseRef = useRef<{ db: any; storage: any } | null>(null);
+
+  async function getFirebase() {
+    if (!firebaseRef.current) {
+      firebaseRef.current = await loadFirebase();
+    }
+    return firebaseRef.current;
+  }
+
   // Detect if user wants to speak with an associate
   async function maybeLogAssociateRequest(userMessage: string) {
     const triggers = [
@@ -98,6 +108,7 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     const normalized = userMessage.toLowerCase();
     if (triggers.some(t => normalized.includes(t))) {
       try {
+        const { db } = await getFirebase();
         await addDoc(collection(db, "chat_notifications"), {
           type: "associate_request",
           timestamp: serverTimestamp(),
@@ -220,6 +231,7 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
       }, 400);
     }
     try {
+      const { db } = await getFirebase();
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -269,10 +281,12 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     }
     setUploading(true);
     try {
+      const { storage } = await getFirebase();
       const sessionId = getSessionId() || 'unknown';
       const fileRef = storageRef(storage, `chat_uploads/${sessionId}_${Date.now()}_${file.name}`);
       await uploadBytes(fileRef, file);
       const url = await getDownloadURL(fileRef);
+      const { db } = await getFirebase();
       await addDoc(collection(db, 'chat_uploads'), {
         sessionId,
         fileName: file.name,

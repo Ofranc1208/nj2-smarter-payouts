@@ -26,5 +26,20 @@ if (process.env.NODE_ENV === 'development') {
   console.log('🔥 Firebase initialized');
 }
 
+// Dynamic import helper for Firebase (for tree-shaking and reduced initial JS)
+export async function loadFirebase() {
+  const { initializeApp } = await import('firebase/app');
+  const { getAuth, RecaptchaVerifier } = await import('firebase/auth');
+  const { getFirestore } = await import('firebase/firestore');
+  const { getStorage } = await import('firebase/storage');
+  const app = initializeApp(firebaseConfig);
+  return {
+    auth: getAuth(app),
+    db: getFirestore(app),
+    storage: getStorage(app),
+    RecaptchaVerifier,
+  };
+}
+
 export { auth, db, storage, RecaptchaVerifier }; 
 // Triggering redeploy

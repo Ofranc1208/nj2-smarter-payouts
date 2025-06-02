@@ -10,10 +10,6 @@ export default function FABSpeedDial() {
   const [pulse, setPulse] = useState(false);
   const fabRef = useRef<HTMLDivElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
-  // --- Chat Prompt Toast State ---
-  const [showChatToast, setShowChatToast] = useState(true); // Show toast on mount
-  const [showChatButton, setShowChatButton] = useState(false); // Show button after toast
-  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Pulse animation every 7 seconds
   useEffect(() => {
@@ -30,19 +26,6 @@ export default function FABSpeedDial() {
     const timer = setTimeout(() => setShowTooltip(false), 3000);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    // Show toast for 4 seconds, then hide and show chat button
-    if (showChatToast) {
-      toastTimeoutRef.current = setTimeout(() => {
-        setShowChatToast(false);
-        setShowChatButton(true);
-      }, 4000);
-    }
-    return () => {
-      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
-    };
-  }, [showChatToast]);
 
   const toggleFAB = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -84,59 +67,10 @@ export default function FABSpeedDial() {
     }
   }, [showChat]);
 
-  // Handler for manual dismiss
-  const handleToastDismiss = () => {
-    setShowChatToast(false);
-    setShowChatButton(true);
-  };
-
   return (
     <>
-      {/* --- Modern Toast for Chat Prompt --- */}
-      {showChatToast && (
-        <div
-          style={{
-            position: 'fixed',
-            left: '50%',
-            bottom: 90,
-            transform: 'translateX(-50%)',
-            zIndex: 1200,
-            // --- Polished, Compact Toast Styling ---
-            background: '#fff', // clean, soft white
-            color: '#222',
-            borderRadius: 12, // slightly rounded
-            boxShadow: '0 2px 8px rgba(25,135,84,0.10), 0 1.5px 8px rgba(0,0,0,0.08)', // subtle shadow
-            padding: '0.55rem 1.1rem', // compact vertical, balanced horizontal
-            fontSize: 15.5, // match site UI
-            fontWeight: 500,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            minWidth: 220,
-            maxWidth: '96vw',
-            border: '1px solid #e6f2ec', // very subtle border
-            transition: 'opacity 0.4s, bottom 0.4s',
-            opacity: showChatToast ? 1 : 0,
-            pointerEvents: 'auto',
-            cursor: 'pointer',
-            animation: 'fadeInUp 0.5s',
-            boxSizing: 'border-box',
-            fontFamily: 'inherit',
-            fontStyle: 'normal',
-            fontStretch: 'normal',
-            letterSpacing: 0.01,
-          }}
-          onClick={handleToastDismiss}
-          aria-label="Need help? Click here to chat!"
-        >
-          <span role="img" aria-label="wave" style={{fontSize: 18, marginRight: 4, flexShrink: 0}}>👋</span>
-          <span style={{lineHeight: 1.35, fontWeight: 500}}>Need help? <span style={{fontWeight: 400}}>Click here to chat!</span></span>
-        </div>
-      )}
-      {/* --- End Toast --- */}
-
       {/* --- Chat Button (shows only after toast disappears) --- */}
-      {showChatButton && (
+      {/* Always show the main floating chat button (fab-speed-dial) */}
       <div
         ref={fabRef}
         className={`fab-speed-dial ${isOpen ? 'open' : ''}`}
@@ -152,27 +86,6 @@ export default function FABSpeedDial() {
           maxWidth: 'calc(100vw - 16px)'
         }}
       >
-        {/* Tooltip on first load */}
-        {showTooltip && (
-          <div style={{
-            position: 'absolute',
-            bottom: '70px',
-            right: 0,
-            background: '#fff',
-            color: '#222',
-            borderRadius: 8,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.13)',
-            padding: '0.7rem 1.1rem',
-            fontSize: 15,
-            fontWeight: 500,
-            zIndex: 1001,
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-            animation: 'fadeInOut 3s linear'
-          }}>
-            <span role="img" aria-label="wave">👋</span> Need help? Click here to chat!
-          </div>
-        )}
         {/* Main White Questions Button (chat trigger) */}
         <button
           className={`fab-main fab-questions${pulse ? ' fab-pulse-enhanced' : ''}`}
@@ -314,7 +227,6 @@ export default function FABSpeedDial() {
           </button>
         </div>
       </div>
-      )}
       {/* --- End Chat Button --- */}
       {/* Enhanced Pulse/Bounce animation keyframes */}
       <style jsx>{`

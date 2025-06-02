@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "purgecss --css .next/static/css/*.css --content './app/**/*.{js,ts,jsx,tsx,html}' --output .next/static/css/"
   },
   "dependencies": {
     "axios": "^1.9.0",
@@ -26,6 +27,7 @@
     "eslint-config-next": "15.3.3",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "purgecss": "^6.0.0"
   }
 }

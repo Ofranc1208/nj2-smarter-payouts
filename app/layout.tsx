@@ -42,6 +42,17 @@ export default function RootLayout({
         <meta property="og:url" content="https://smarterpayouts.com" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content="/assets/images/og-image.png" />
+        <link
+          rel="preload"
+          as="video"
+          href="/assets/videos/promos/counting-cash.mp4"
+          type="video/mp4"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/assets/images/fallback.jpg"
+        />
       </head>
       <body className={inter.className}>
         {/* Only render Navbar if not hidden by page config */}
@@ -53,7 +64,7 @@ export default function RootLayout({
         <LazyFABSpeedDial />
         <Script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
       </body>
     </html>
