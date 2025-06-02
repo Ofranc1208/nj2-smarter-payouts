@@ -1,114 +1,198 @@
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default function StructuredSettlementInfoHub() {
+  // Article Schema for SEO
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Structured Settlement Info Hub | Complete Guide & Resources",
+    "description": "Comprehensive guide to structured settlements: selling, laws by state, lump sum payouts, and tax rules. Learn everything about structured settlements at SmarterPayouts.",
+    "image": "https://smarterpayouts.com/assets/images/social-preview.jpg",
+    "author": {
+      "@type": "Organization",
+      "name": "SmarterPayouts",
+      "url": "https://smarterpayouts.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "SmarterPayouts",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://smarterpayouts.com/assets/images/logo.png"
+      }
+    },
+    "datePublished": "2024-01-01",
+    "dateModified": new Date().toISOString().split('T')[0],
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://smarterpayouts.com/structured-settlement-info-hub"
+    }
+  };
+
+  // Breadcrumb Schema for Navigation
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://smarterpayouts.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Knowledge Hub",
+        "item": "https://smarterpayouts.com/structured-settlement-info-hub"
+      }
+    ]
+  };
+
   return (
     <>
       <Head>
         <title>Structured Settlement Info Hub | SmarterPayouts</title>
         <meta name="description" content="Comprehensive guide to structured settlements: selling, laws by state, lump sum payouts, and tax rules. Learn everything about structured settlements at SmarterPayouts." />
         <meta name="robots" content="index, follow" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(articleSchema)
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbSchema)
+          }}
+        />
       </Head>
       <main className="container py-5">
-        <article>
-          <header className="mb-5 text-center">
-            <h1 className="display-4 fw-bold mb-3">Structured Settlement Info Hub</h1>
-            <p className="lead">Your comprehensive resource for understanding, selling, and maximizing your structured settlement payout.</p>
-          </header>
+        <article className="row">
+          <div className="col-lg-8">
+            <header className="mb-5">
+              <h1 className="display-4 fw-bold mb-3">Structured Settlement Info Hub</h1>
+              <p className="lead">Your comprehensive resource for understanding, selling, and maximizing your structured settlement payout.</p>
+            </header>
 
-          <section className="mb-5">
-            <h2 className="h2 fw-semibold mb-3">What is a structured settlement?</h2>
-            <p>
-              Structured settlements are financial arrangements that provide periodic payments to individuals, typically as a result of a personal injury lawsuit or insurance claim. These payments offer long-term financial security and are often tax-free. [SEO: structured settlement definition, periodic payments, personal injury settlement]
-            </p>
-          </section>
+            <section className="mb-5">
+              <h2 className="h2 fw-semibold mb-3">What is a structured settlement?</h2>
+              <p>
+                Structured settlements are financial arrangements that provide periodic payments to individuals, typically as a result of a personal injury lawsuit or insurance claim. These payments offer long-term financial security and are often tax-free.
+              </p>
+              <Link href="/structured-settlement-info-hub/what-is-a-structured-settlement" className="btn btn-outline-success">
+                Learn More About Structured Settlements
+              </Link>
+            </section>
 
-          <section className="mb-5">
-            <h2 className="h2 fw-semibold mb-3">Can I sell my structured settlement?</h2>
-            <p>
-              Yes, you can sell your structured settlement payments for a lump sum of cash. The process involves court approval and varies by state. Selling your settlement can provide immediate funds for major expenses or financial goals. [SEO: sell structured settlement, lump sum, cash out settlement]
-            </p>
-          </section>
+            <section className="mb-5">
+              <h2 className="h2 fw-semibold mb-3">Can I sell my structured settlement?</h2>
+              <p>
+                Yes, you can sell your structured settlement payments for a lump sum of cash. The process involves court approval and varies by state. Selling your settlement can provide immediate funds for major expenses or financial goals.
+              </p>
+              <Link href="/structured-settlement-info-hub/how-to-sell-structured-settlement" className="btn btn-outline-success">
+                Learn How to Sell Your Settlement
+              </Link>
+            </section>
 
-          <section className="mb-5">
-            <h2 className="h2 fw-semibold mb-3">Structured settlement laws in Florida, Texas, California, etc.</h2>
-            <p>
-              Each state has specific laws governing the sale of structured settlements. For example, Florida, Texas, and California require court approval and consumer protections to ensure fair transactions. Always consult state-specific guidelines before selling. [SEO: structured settlement laws Florida, Texas, California, state regulations]
-            </p>
-          </section>
+            <section className="mb-5">
+              <h2 className="h2 fw-semibold mb-3">Explore Our Resources</h2>
+              <div className="row g-4">
+                <div className="col-md-6">
+                  <div className="card h-100">
+                    <div className="card-body">
+                      <h3 className="h5">State Laws & Requirements</h3>
+                      <p>Learn about structured settlement laws in your state.</p>
+                      <Link href="/structured-settlement-info-hub/state-laws" className="btn btn-outline-success">
+                        View State Laws
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card h-100">
+                    <div className="card-body">
+                      <h3 className="h5">Court Approval Process</h3>
+                      <p>Understand the legal requirements for selling.</p>
+                      <Link href="/structured-settlement-info-hub/court-approval-process" className="btn btn-outline-success">
+                        Learn About Court Approval
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card h-100">
+                    <div className="card-body">
+                      <h3 className="h5">Glossary of Terms</h3>
+                      <p>Definitions of key structured settlement terms.</p>
+                      <Link href="/structured-settlement-info-hub/glossary-of-structured-settlement-terms" className="btn btn-outline-success">
+                        View Glossary
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card h-100">
+                    <div className="card-body">
+                      <h3 className="h5">FAQ</h3>
+                      <p>Answers to common questions about settlements.</p>
+                      <Link href="/structured-settlement-info-hub/faq" className="btn btn-outline-success">
+                        Read FAQ
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
 
-          <section className="mb-5">
-            <h2 className="h2 fw-semibold mb-3">How structured settlement lump sums work</h2>
-            <p>
-              When you sell your structured settlement, you receive a lump sum payment in exchange for future periodic payments. The lump sum is calculated based on present value, discount rates, and market factors. [SEO: lump sum payout, structured settlement present value, discount rate]
-            </p>
-          </section>
+          {/* Sidebar */}
+          <aside className="col-lg-4">
+            <div className="card mb-4">
+              <div className="card-body">
+                <h3 className="h5">Get Your Instant Quote</h3>
+                <p>Find out how much your structured settlement is worth today.</p>
+                <Link href="/pricing-calculator" className="btn btn-success w-100">
+                  Calculate Your Offer
+                </Link>
+              </div>
+            </div>
 
-          <section className="mb-5">
-            <h2 className="h2 fw-semibold mb-3">Tax rules for structured settlements</h2>
-            <p>
-              Most structured settlement payments are tax-free, but selling your payments may have tax implications. Consult a tax professional to understand your specific situation. [SEO: structured settlement taxes, tax-free payments, IRS rules]
-            </p>
-          </section>
+            <div className="card mb-4">
+              <div className="card-body">
+                <h3 className="h5">Need Help?</h3>
+                <p>Our experts are here to answer your questions.</p>
+                <Link href="/contact" className="btn btn-outline-success w-100">
+                  Contact Us
+                </Link>
+              </div>
+            </div>
 
-          {/* Lump Sum Calculator Info Section */}
-          <section className="mb-5">
-            <h2 className="h2 fw-semibold mb-3">🧮 Structured Settlement Lump Sum Calculator</h2>
-            <p className="mb-4">
-              Discover the True Value of Your Structured Settlement Payments
-            </p>
-            <p>
-              Are you receiving structured settlement payments and considering converting them into a lump sum? Our Structured Settlement Lump Sum Calculator is designed to provide you with a transparent and accurate estimate of your settlement's present value. Unlike many competitors, we prioritize clarity and user empowerment, ensuring you have the information needed to make informed financial decisions.
-            </p>
-
-            <h3 className="h5 fw-bold mt-4">Why Choose Our Calculator?</h3>
-            <ul>
-              <li><strong>Transparency:</strong> Input your payment details and receive an immediate estimate without hidden fees or obligations.</li>
-              <li><strong>Accuracy:</strong> Our calculator uses industry-standard discount rates and considers various factors to provide a realistic valuation.</li>
-              <li><strong>Empowerment:</strong> Understand the value of your settlement before engaging with purchasing companies.</li>
-            </ul>
-
-            <h3 className="h5 fw-bold mt-4">How It Works</h3>
-            <ol>
-              <li><strong>Enter Your Details:</strong>
-                <ul>
-                  <li>Payment Amount: Specify the amount you receive per payment period.</li>
-                  <li>Payment Frequency: Indicate how often you receive payments (e.g., monthly, quarterly).</li>
-                  <li>Number of Remaining Payments: Input the total number of payments left in your settlement.</li>
-                  <li>Next Payment Date: Provide the date of your upcoming payment.</li>
+            <div className="card">
+              <div className="card-body">
+                <h3 className="h5">Related Articles</h3>
+                <ul className="list-unstyled">
+                  <li className="mb-2">
+                    <Link href="/structured-settlement-info-hub/pros-cons-selling-structured-settlement" className="text-decoration-none">
+                      Pros & Cons of Selling
+                    </Link>
+                  </li>
+                  <li className="mb-2">
+                    <Link href="/structured-settlement-info-hub/maximize-offer-selling-structured-settlement" className="text-decoration-none">
+                      How to Maximize Your Offer
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/structured-settlement-info-hub/common-mistakes-selling-structured-settlement" className="text-decoration-none">
+                      Common Mistakes to Avoid
+                    </Link>
+                  </li>
                 </ul>
-              </li>
-              <li><strong>Calculate:</strong> Click the "Calculate" button to process your information.</li>
-              <li><strong>Review Your Estimate:</strong> View the present value of your remaining payments, giving you insight into the lump sum you could receive.</li>
-            </ol>
-
-            <h3 className="h5 fw-bold mt-4">Understanding Discount Rates</h3>
-            <p>
-              The discount rate is a critical factor in determining the present value of your future payments. It reflects the time value of money and the risk associated with future payments. Our calculator applies a standard discount rate, but actual rates can vary based on market conditions and individual circumstances.
-            </p>
-
-            <h3 className="h5 fw-bold mt-4">Factors Influencing Your Settlement's Value</h3>
-            <ul>
-              <li><strong>Payment Schedule:</strong> The frequency and consistency of your payments.</li>
-              <li><strong>Total Remaining Amount:</strong> The sum of all future payments.</li>
-              <li><strong>Time Horizon:</strong> The duration over which payments are to be received.</li>
-              <li><strong>Market Conditions:</strong> Interest rates and economic factors can affect discount rates.</li>
-            </ul>
-
-            <h3 className="h5 fw-bold mt-4">Why Transparency Matters</h3>
-            <p>
-              Many companies offer vague estimates or require you to commit before providing detailed information. We believe in a user-first approach:
-            </p>
-            <ul>
-              <li><strong>No Obligations:</strong> Use our calculator freely without any commitment.</li>
-              <li><strong>Immediate Results:</strong> Get your estimate instantly without waiting for callbacks or emails.</li>
-              <li><strong>Educational Resources:</strong> Access articles and guides to better understand structured settlements and your options.</li>
-            </ul>
-
-            <h3 className="h5 fw-bold mt-4">Take Control of Your Financial Future</h3>
-            <p>
-              Understanding the value of your structured settlement empowers you to make choices that align with your financial goals. Whether you're considering selling your payments or simply exploring your options, our calculator is a valuable tool in your decision-making process.
-            </p>
-          </section>
+              </div>
+            </div>
+          </aside>
         </article>
       </main>
     </>

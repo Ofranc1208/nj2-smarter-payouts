@@ -66,6 +66,50 @@ export default function FAQs() {
           content="Find answers to common questions about selling your structured settlement, court approval, and getting your cash fast with SmarterPayouts."
         />
         <meta property="og:type" content="website" />
+        {/* FAQPage Schema for AI SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "How quickly will I get a response?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We respond to all inquiries within 24 hours, Monday through Friday."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I get a quote without a phone call?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes! Use our Early Payout Calculator for an instant, no-obligation quote online."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Is my information confidential?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Absolutely. We never share your information and all messages are handled securely and privately."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What if I need urgent help?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "If your situation is urgent, mention it in your message and we'll prioritize your request."
+                  }
+                }
+              ]
+            })
+          }}
+        />
       </Head>
 
       {/* HERO SECTION */}
