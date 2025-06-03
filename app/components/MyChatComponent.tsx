@@ -6,6 +6,7 @@ import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage
 import { format } from 'date-fns';
 import { splitIntoParagraphs, renderAssistantParagraphs, shouldAppendCalculatorCTA, followupTopics } from '../utils/chatUtils';
 import { mintSystemPrompt } from '../utils/mintSystemPrompt';
+import { getDocs, collection as fsCollection, query, limit } from 'firebase/firestore';
 
 export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
   // ===== User Session & Local Storage Logic =====
@@ -75,10 +76,44 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
 
   // Add after useState declarations:
   const firebaseRef = useRef<{ db: any; storage: any } | null>(null);
+  const [firebaseStatus, setFirebaseStatus] = useState<'initializing' | 'ready' | 'error'>('initializing');
+
+  // Add Firebase initialization check
+  useEffect(() => {
+    async function checkFirebase() {
+      try {
+        console.log('🔍 Checking Firebase initialization...');
+        const { db } = await getFirebase();
+        // v9+ modular API for test read
+        const q = query(fsCollection(db, 'chat_notifications'), limit(1));
+        await getDocs(q);
+        console.log('✅ Firebase initialized and connected successfully');
+        setFirebaseStatus('ready');
+      } catch (err) {
+        console.error('❌ Firebase initialization/connection failed:', err);
+        if (err instanceof Error) {
+          console.error('Error details:', {
+            message: err.message,
+            name: err.name,
+            stack: err.stack
+          });
+        }
+        setFirebaseStatus('error');
+      }
+    }
+    checkFirebase();
+  }, []);
 
   async function getFirebase() {
     if (!firebaseRef.current) {
-      firebaseRef.current = await loadFirebase();
+      console.log('🔄 Loading Firebase services...');
+      try {
+        firebaseRef.current = await loadFirebase();
+        console.log('✅ Firebase services loaded');
+      } catch (err) {
+        console.error('❌ Failed to load Firebase services:', err);
+        throw err;
+      }
     }
     return firebaseRef.current;
   }
@@ -107,20 +142,52 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     ];
     const normalized = userMessage.toLowerCase();
     if (triggers.some(t => normalized.includes(t))) {
+      console.log('🔍 Trigger phrase detected:', userMessage);
       try {
+        console.log('🔄 Getting Firebase instance...');
         const { db } = await getFirebase();
-        await addDoc(collection(db, "chat_notifications"), {
+        
+        console.log('📝 Attempting to write to Firestore...', {
+          collection: 'chat_notifications',
+          data: {
+            type: "associate_request",
+            timestamp: serverTimestamp(),
+            user_message: userMessage,
+            chat_session_id: getSessionId() || "unknown",
+            status: "new"
+          }
+        });
+
+        const docRef = await addDoc(collection(db, "chat_notifications"), {
           type: "associate_request",
           timestamp: serverTimestamp(),
           user_message: userMessage,
           chat_session_id: getSessionId() || "unknown",
           status: "new"
         });
+
+        console.log('✅ Successfully wrote to Firestore. Document ID:', docRef.id);
       } catch (err) {
+        console.error('❌ Failed to log associate request:', err);
+        if (err instanceof Error) {
+          console.error('Error details:', {
+            message: err.message,
+            name: err.name,
+            stack: err.stack,
+            code: (err as any).code, // Firebase errors often have a code
+            firebase: (err as any).firebase // Firebase specific error info
+          });
+        }
+        // Show error to user in development
         if (process.env.NODE_ENV === 'development') {
-          console.error("Failed to log associate request:", err);
+          setMessages(msgs => [...msgs, { 
+            role: "assistant", 
+            content: "⚠️ [DEV] Failed to log request. Check console for details." 
+          }]);
         }
       }
+    } else {
+      console.log('ℹ️ No trigger phrase detected in:', userMessage);
     }
   }
 
@@ -180,6 +247,7 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
   const sendMessage = async () => {
     if (!input.trim()) return;
     if (isAssociateRequest(input)) {
+      await maybeLogAssociateRequest(input);
       setMessages([...messages, { role: 'user', content: input }]);
       setInput("");
       setTyping(true);
@@ -453,6 +521,22 @@ export default function MyChatComponent({ onClose }: { onClose?: () => void }) {
     >
       <div style={{ position: 'relative', background: "#09b44d", color: "#fff", padding: "12px 18px", fontWeight: 600, fontSize: 18 }}>
         <span id="chat-header" tabIndex={0} aria-label="Chat with Us">💬 Chat with Us</span>
+        {process.env.NODE_ENV === 'development' && (
+          <div style={{ 
+            position: 'absolute', 
+            top: -20, 
+            right: 0, 
+            fontSize: 12, 
+            padding: '2px 6px',
+            borderRadius: 4,
+            background: firebaseStatus === 'ready' ? '#198754' : 
+                       firebaseStatus === 'error' ? '#dc3545' : 
+                       '#ffc107',
+            color: '#fff'
+          }}>
+            Firebase: {firebaseStatus}
+          </div>
+        )}
         {onClose && (
           <button
             onClick={onClose}

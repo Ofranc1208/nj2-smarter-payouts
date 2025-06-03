@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { calculateMinMaxNPV } from '../utils/npvCalculations';
 import { AMOUNT_ADJUSTMENTS } from '../utils/npvConfig';
 import { loadFirebase } from '../utils/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import styles from './OfferConfirmation.module.css';
 
 // Phone number formatter
@@ -92,7 +92,11 @@ export default function Step3OfferSheet({ calculationResult, formData, onBack }:
     // Save to Firestore
     try {
       const { db } = await loadFirebase();
-      await addDoc(collection(db, "offer_submissions"), {
+      // Generate custom document ID
+      const now = new Date();
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const customId = `offer-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+      await setDoc(doc(db, "offer_submissions", customId), {
         phone: cleaned,
         offerCode,
         timestamp: serverTimestamp(),
