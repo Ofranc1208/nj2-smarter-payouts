@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic'
 import { ReactNode } from 'react'
 import ClientNavbarWrapper from './components/ClientNavbarWrapper'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
 const LazyFABSpeedDial = dynamic(() => import('./components/FABSpeedDial'), { ssr: false })
 
@@ -53,6 +53,7 @@ export default function RootLayout({
           as="image"
           href="/assets/images/fallback.jpg"
         />
+        <link rel="preload" as="font" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTcviYw.woff2" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body className={inter.className}>
         {/* Only render Navbar if not hidden by page config */}
