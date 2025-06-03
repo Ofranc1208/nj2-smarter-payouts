@@ -15,8 +15,8 @@ const inter = Inter({ subsets: ['latin'] })
 const LazyFABSpeedDial = dynamic(() => import('./components/FABSpeedDial'), { ssr: false })
 
 export const metadata: Metadata = {
-  title: 'Structured Settlement Calculator',
-  description: 'Calculate and manage your structured settlement payments',
+  title: 'Structured Settlement Early Payout Calculator | Smarter Payouts',
+  description: 'Instant, accurate, and private lump sum calculator. No calls, no salespeople, no personal data required. See the real value of your structured settlement — avoid flashy cash advance offers.',
 }
 
 export default function RootLayout({
@@ -33,8 +33,8 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <link rel="icon" href="/assets/images/favicon_without_text.ico" type="image/x-icon" />
-        <title>SmarterPayouts – The First Real-Time Structured Settlement Calculator</title>
-        <meta name="description" content="Instantly calculate your structured settlement lump sum payout with the industry's first real-time, logic-driven calculator. No sales calls, no personal info required." />
+        <title>Structured Settlement Early Payout Calculator | Smarter Payouts</title>
+        <meta name="description" content="Instant, accurate, and private lump sum calculator. No calls, no salespeople, no personal data required. See the real value of your structured settlement — avoid flashy cash advance offers." />
         <meta property="og:title" content="SmarterPayouts – The First Real-Time Structured Settlement Calculator" />
         <meta property="og:description" content="Instantly calculate your structured settlement lump sum payout with the industry's first real-time, logic-driven calculator. No sales calls, no personal info required." />
         <meta property="og:image" content="/assets/images/og-image.png" />

@@ -148,6 +148,7 @@ export default function Home() {
           }}
         >
           <source src="/assets/videos/promos/counting-cash.webm" type="video/webm" />
+          <source src="/assets/videos/promos/counting-cash.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         {/**
